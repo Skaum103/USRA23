@@ -19,15 +19,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import org.example.Utils.util;
+import org.example.Utils.*;
 
 import static java.util.Collections.emptyList;
+import static org.example.Utils.util.readToken;
 import static org.example.Utils.util.waitRemoteDisconnect;
 
 public class SlackBot {
 
     static Optional<List<Message>> conversationHistory = Optional.empty();
-    static String token = "xoxp-5404182925894-5407900735765-5396438763191-b54cf35bc25734b742038a5138e61969";
+    static String token = readToken();
 
     public static void main(String[] args) throws InterruptedException {
         Thread tsharkS = new Thread(new Tshark("slackPcapFixGapLab8_1111.pcapng"));

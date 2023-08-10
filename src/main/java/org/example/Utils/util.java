@@ -144,4 +144,16 @@ public class util {
             e.printStackTrace();
         }
     }
+
+
+    public static String readToken() {
+        String token = null;
+        try {
+            token =  readURL("token.txt").get(0);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return token;
+    }
 }
