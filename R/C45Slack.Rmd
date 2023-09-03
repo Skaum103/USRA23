@@ -32,12 +32,15 @@ slack.lab.1.1111
 drops <- c("srcIP",  "dstIP","srcMac", "dstMac", "timeFirst", "timeLast",
           "srcIPCC", "dstIPCC", "srcIPOrg", "dstIPOrg", "srcMac_dstMac_numP", "dstPortClass", "srcMacLbl_dstMacLbl", "ethVlanID",
           "hdrDesc",
-          "vlanID")
+          "vlanID",
+          "icmpBFTypH_TypL_Code")
 
 #"srcIPOrg", "dstIPOrg", 
 slack.lab.1.noVPN <- slack.lab.1.noVPN[, !(names(slack.lab.1.noVPN) %in% drops)]
 slack.lab.1.1111 <- slack.lab.1.1111[, !(names(slack.lab.1.1111) %in% drops)]
+print("NA cols in slack.lab.1.noVPN:")
 sum(is.na(slack.lab.1.noVPN))
+print("NA cols in slack.lab.1.1111:")
 sum(is.na(slack.lab.1.1111))
 
 # Add a new column, isVPN, set to 0 for no_vpn, 1 for 1111
@@ -82,6 +85,9 @@ dtrain <- rbind(dtrain_noVPN,dtrain_1111)
 dtest <- rbind(dtest_1111,dtest_noVPN)
 
 # Remove all columns with only 1 unique value
+s <- dtrain %>% select(where(~ n_distinct(.) <= 1))
+drops <- c(drops,colnames(s))
+length(drops)
 dtrain <- dtrain %>% select(where(~ n_distinct(.) > 1))
 dtrain$isVPN <- as.factor(dtrain$isVPN)
 
@@ -122,36 +128,132 @@ confusionMatrix(predictions, dtest$isVPN)
 
 ## Load more files
 ```{r}
+# Remain data in lab
+slack.lab.10.noVPN = read.csv("t2/slack/none/lab/slackPcapFixGapLab10re_flows.csv")
+slack.lab.10.1111 = read.csv("t2/slack/1.1.1.1/lab/slackPcapFixGapLab10_1111_flows.csv")
 slack.lab.3.noVPN = read.csv("t2/slack/none/lab/slackPcapFixGapLab3_flows.csv")
 slack.lab.3.1111 = read.csv("t2/slack/1.1.1.1/lab/slackPcapFixGapLab3_1111_flows.csv")
+slack.lab.6.noVPN = read.csv("t2/slack/none/lab/slackPcapFixGapLab6_flows.csv")
+slack.lab.6.1111 = read.csv("t2/slack/1.1.1.1/lab/slackPcapFixGapLab6_1111_flows.csv")
+slack.lab.8.noVPN = read.csv("t2/slack/none/lab/slackPcapFixGapLab8_flows.csv")
+slack.lab.8.1111 = read.csv("t2/slack/1.1.1.1/lab/slackPcapFixGapLab8_1111_flows.csv")
 
 
-# Drop Src.ipaddr && Dest.ipaddr && start,end time && mac
+# Data in residence
+slack.res.10.noVPN = read.csv("t2/slack/none/res/slackPcapFixGapRes11_flows.csv")
+slack.res.10.1111 = read.csv("t2/slack/1.1.1.1/res/slackPcapFixGapRes10_1111_flows.csv")
+slack.res.1.noVPN = read.csv("t2/slack/none/res/slackPcapFixGapRes1_flows.csv")
+slack.res.1.1111 = read.csv("t2/slack/1.1.1.1/res/slackPcapFixGapRes1_1111_flows.csv")
+slack.res.3.noVPN = read.csv("t2/slack/none/res/slackPcapFixGapRes3_flows.csv")
+slack.res.3.1111 = read.csv("t2/slack/1.1.1.1/res/slackPcapFixGapRes3_1111_flows.csv")
+slack.res.6.noVPN = read.csv("t2/slack/none/res/slackPcapFixGapRes6_flows.csv")
+slack.res.6.1111 = read.csv("t2/slack/1.1.1.1/res/slackPcapFixGapRes6_1111_flows.csv")
+slack.res.8.noVPN = read.csv("t2/slack/none/res/slackPcapFixGapRes8_flows.csv")
+slack.res.8.1111 = read.csv("t2/slack/1.1.1.1/res/slackPcapFixGapRes8_1111_flows.csv")
+
+# Drop fields in drop table
+# Data in lab
+slack.lab.10.noVPN <- slack.lab.10.noVPN[, !(names(slack.lab.10.noVPN) %in% drops)]
+slack.lab.10.1111 <- slack.lab.10.1111[, !(names(slack.lab.10.1111) %in% drops)]
 slack.lab.3.noVPN <- slack.lab.3.noVPN[, !(names(slack.lab.3.noVPN) %in% drops)]
 slack.lab.3.1111 <- slack.lab.3.1111[, !(names(slack.lab.3.1111) %in% drops)]
-sum(is.na(slack.lab.3.noVPN))
-sum(is.na(slack.lab.3.1111))
+slack.lab.6.noVPN <- slack.lab.6.noVPN[, !(names(slack.lab.6.noVPN) %in% drops)]
+slack.lab.6.1111 <- slack.lab.6.1111[, !(names(slack.lab.6.1111) %in% drops)]
+slack.lab.8.noVPN <- slack.lab.8.noVPN[, !(names(slack.lab.8.noVPN) %in% drops)]
+slack.lab.8.1111 <- slack.lab.8.1111[, !(names(slack.lab.8.1111) %in% drops)]
+
+# Data in residence
+slack.res.10.noVPN <- slack.res.10.noVPN[, !(names(slack.res.10.noVPN) %in% drops)]
+slack.res.10.1111 <- slack.res.10.1111[, !(names(slack.res.10.1111) %in% drops)]
+slack.res.1.noVPN <- slack.res.1.noVPN[, !(names(slack.res.1.noVPN) %in% drops)]
+slack.res.1.1111 <- slack.res.1.1111[, !(names(slack.res.1.1111) %in% drops)]
+slack.res.3.noVPN <- slack.res.3.noVPN[, !(names(slack.res.3.noVPN) %in% drops)]
+slack.res.3.1111 <- slack.res.3.1111[, !(names(slack.res.3.1111) %in% drops)]
+slack.res.6.noVPN <- slack.res.6.noVPN[, !(names(slack.res.6.noVPN) %in% drops)]
+slack.res.6.1111 <- slack.res.6.1111[, !(names(slack.res.6.1111) %in% drops)]
+slack.res.8.noVPN <- slack.res.8.noVPN[, !(names(slack.res.8.noVPN) %in% drops)]
+slack.res.8.1111 <- slack.res.8.1111[, !(names(slack.res.8.1111) %in% drops)]
+
 
 # Add a new column, isVPN, set to 0 for no_vpn, 1 for 1111
+# Data in lab
+slack.lab.10.noVPN$isVPN <- 0
+slack.lab.10.1111$isVPN <- 1
 slack.lab.3.noVPN$isVPN <- 0
 slack.lab.3.1111$isVPN <- 1
+slack.lab.6.noVPN$isVPN <- 0
+slack.lab.6.1111$isVPN <- 1
+slack.lab.8.noVPN$isVPN <- 0
+slack.lab.8.1111$isVPN <- 1
+
+# Data in residence
+slack.res.10.noVPN$isVPN <- 0
+slack.res.10.1111$isVPN <- 1
+slack.res.1.noVPN$isVPN <- 0
+slack.res.1.1111$isVPN <- 1
+slack.res.3.noVPN$isVPN <- 0
+slack.res.3.1111$isVPN <- 1
+slack.res.6.noVPN$isVPN <- 0
+slack.res.6.1111$isVPN <- 1
+slack.res.8.noVPN$isVPN <- 0
+slack.res.8.1111$isVPN <- 1
 
 # Show summary
+slack.lab.10.noVPN = data.frame(slack.lab.10.noVPN)
+slack.lab.10.1111 = data.frame(slack.lab.10.1111)
 slack.lab.3.noVPN = data.frame(slack.lab.3.noVPN)
 slack.lab.3.1111 = data.frame(slack.lab.3.1111)
+slack.lab.6.noVPN = data.frame(slack.lab.6.noVPN)
+slack.lab.6.1111 = data.frame(slack.lab.6.1111)
+slack.lab.8.noVPN = data.frame(slack.lab.8.noVPN)
+slack.lab.8.1111 = data.frame(slack.lab.8.1111)
 
+slack.res.10.noVPN = data.frame(slack.res.10.noVPN)
+slack.res.10.1111 = data.frame(slack.res.10.1111)
+slack.res.1.noVPN = data.frame(slack.res.1.noVPN)
+slack.res.1.1111 = data.frame(slack.res.1.1111)
+slack.res.3.noVPN = data.frame(slack.res.3.noVPN)
+slack.res.3.1111 = data.frame(slack.res.3.1111)
+slack.res.6.noVPN = data.frame(slack.res.6.noVPN)
+slack.res.6.1111 = data.frame(slack.res.6.1111)
+slack.res.8.noVPN = data.frame(slack.res.8.noVPN)
+slack.res.8.1111 = data.frame(slack.res.8.1111)
+
+slack.lab.10.data <- rbind(slack.lab.10.1111,slack.lab.10.noVPN)
 slack.lab.3.data <- rbind(slack.lab.3.1111,slack.lab.3.noVPN)
+slack.lab.6.data <- rbind(slack.lab.6.1111,slack.lab.6.noVPN)
+slack.lab.8.data <- rbind(slack.lab.8.1111,slack.lab.8.noVPN)
 
-# Remove all columns with only 1 unique value
-slack.lab.3.data <- slack.lab.3.data %>% select(where(~ n_distinct(.) > 1))
 
+slack.res.3.data <- rbind(slack.res.3.1111,slack.res.3.noVPN)
+
+print("Number of rows in slack.lab.3.data:")
 nrow(slack.lab.3.data)
+print("Number of cols in slack.lab.3.data:")
 ncol(slack.lab.3.data)
 
 ```
 
 ## Predicate
 ```{r}
-predictions = predict(C45Fit, newdata = slack.lab.3.data)
-confusionMatrix(predictions, as.factor(slack.lab.3.data$isVPN))
+predictions.lab.10 = predict(C45Fit, newdata = slack.lab.10.data)
+confMatrixes.lab.10 <- confusionMatrix(predictions.lab.10, as.factor(slack.lab.10.data$isVPN))
+
+predictions.lab.3 = predict(C45Fit, newdata = slack.lab.3.data)
+confMatrixes.lab.3 <- confusionMatrix(predictions.lab.3, as.factor(slack.lab.3.data$isVPN))
+
+predictions.lab.6 = predict(C45Fit, newdata = slack.lab.6.data)
+confMatrixes.lab.6 <- confusionMatrix(predictions.lab.6, as.factor(slack.lab.6.data$isVPN))
+
+predictions.lab.8 = predict(C45Fit, newdata = slack.lab.8.data)
+confMatrixes.lab.8 <- confusionMatrix(predictions.lab.8, as.factor(slack.lab.8.data$isVPN))
+
+predictions.res.3 = predict(C45Fit, newdata = slack.res.3.data)
+confMatrixes.res.3 <- confusionMatrix(predictions.res.3, as.factor(slack.res.3.data$isVPN))
+
+confMatrixes.lab.10$overall
+confMatrixes.lab.3$overall
+confMatrixes.lab.6$overall
+confMatrixes.lab.8$overall
+confMatrixes.res.3$overall
 ```
