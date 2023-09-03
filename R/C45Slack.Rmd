@@ -23,14 +23,17 @@ library(dplyr)
 
 ## Data files
 ```{r}
-slack.lab.1.noVPN = read.csv("slackPcapFixGapLab1_flows.csv")
-slack.lab.1.1111 = read.csv("slackPcapFixGapLab1_1111_flows.csv")
-
+slack.lab.1.noVPN = read.csv("t2/slack/none/lab/slackPcapFixGapLab1_flows.csv")
+slack.lab.1.1111 = read.csv("t2/slack/1.1.1.1/lab/slackPcapFixGapLab1_1111_flows.csv")
+slack.lab.1.noVPN
+slack.lab.1.1111
 
 # Drop Src.ipaddr && Dest.ipaddr && start,end time && mac
 drops <- c("srcIP",  "dstIP","srcMac", "dstMac", "timeFirst", "timeLast",
           "srcIPCC", "dstIPCC", "srcIPOrg", "dstIPOrg", "srcMac_dstMac_numP", "dstPortClass", "srcMacLbl_dstMacLbl", "ethVlanID",
-          "hdrDesc")
+          "hdrDesc",
+          "vlanID")
+
 #"srcIPOrg", "dstIPOrg", 
 slack.lab.1.noVPN <- slack.lab.1.noVPN[, !(names(slack.lab.1.noVPN) %in% drops)]
 slack.lab.1.1111 <- slack.lab.1.1111[, !(names(slack.lab.1.1111) %in% drops)]
@@ -42,6 +45,7 @@ slack.lab.1.noVPN$isVPN <- 0
 slack.lab.1.1111$isVPN <- 1
 
 # Show summary
+
 slack.lab.1.noVPN = data.frame(slack.lab.1.noVPN)
 slack.lab.1.1111 = data.frame(slack.lab.1.1111)
 ```
@@ -118,15 +122,11 @@ confusionMatrix(predictions, dtest$isVPN)
 
 ## Load more files
 ```{r}
-slack.lab.3.noVPN = read.csv("slackPcapFixGapLab3_flows.csv")
-slack.lab.3.1111 = read.csv("slackPcapFixGapLab3_1111_flows.csv")
+slack.lab.3.noVPN = read.csv("t2/slack/none/lab/slackPcapFixGapLab3_flows.csv")
+slack.lab.3.1111 = read.csv("t2/slack/1.1.1.1/lab/slackPcapFixGapLab3_1111_flows.csv")
 
 
 # Drop Src.ipaddr && Dest.ipaddr && start,end time && mac
-drops <- c("srcIP",  "dstIP","srcMac", "dstMac", "timeFirst", "timeLast",
-          "srcIPCC", "dstIPCC", "srcIPOrg", "dstIPOrg", "srcMac_dstMac_numP", "dstPortClass", "srcMacLbl_dstMacLbl", "ethVlanID",
-          "hdrDesc")
-#"srcIPOrg", "dstIPOrg"
 slack.lab.3.noVPN <- slack.lab.3.noVPN[, !(names(slack.lab.3.noVPN) %in% drops)]
 slack.lab.3.1111 <- slack.lab.3.1111[, !(names(slack.lab.3.1111) %in% drops)]
 sum(is.na(slack.lab.3.noVPN))
