@@ -23,8 +23,8 @@ library(dplyr)
 
 ## Data files
 ```{r}
-lab1_noVPN = read.csv("slackPcapFixGapLab1_flows.csv")
-lab1_1111 = read.csv("slackPcapFixGapLab1_1111_flows.csv")
+slack.lab.1.noVPN = read.csv("slackPcapFixGapLab1_flows.csv")
+slack.lab.1.1111 = read.csv("slackPcapFixGapLab1_1111_flows.csv")
 
 
 # Drop Src.ipaddr && Dest.ipaddr && start,end time && mac
@@ -32,28 +32,28 @@ drops <- c("srcIP",  "dstIP","srcMac", "dstMac", "timeFirst", "timeLast",
           "srcIPCC", "dstIPCC", "srcIPOrg", "dstIPOrg", "srcMac_dstMac_numP", "dstPortClass", "srcMacLbl_dstMacLbl", "ethVlanID",
           "hdrDesc")
 #"srcIPOrg", "dstIPOrg", 
-lab1_noVPN <- lab1_noVPN[, !(names(lab1_noVPN) %in% drops)]
-lab1_1111 <- lab1_1111[, !(names(lab1_1111) %in% drops)]
-sum(is.na(lab1_noVPN))
-sum(is.na(lab1_1111))
+slack.lab.1.noVPN <- slack.lab.1.noVPN[, !(names(slack.lab.1.noVPN) %in% drops)]
+slack.lab.1.1111 <- slack.lab.1.1111[, !(names(slack.lab.1.1111) %in% drops)]
+sum(is.na(slack.lab.1.noVPN))
+sum(is.na(slack.lab.1.1111))
 
 # Add a new column, isVPN, set to 0 for no_vpn, 1 for 1111
-lab1_noVPN$isVPN <- 0
-lab1_1111$isVPN <- 1
+slack.lab.1.noVPN$isVPN <- 0
+slack.lab.1.1111$isVPN <- 1
 
 # Show summary
-lab1_noVPN = data.frame(lab1_noVPN)
-lab1_1111 = data.frame(lab1_1111)
+slack.lab.1.noVPN = data.frame(slack.lab.1.noVPN)
+slack.lab.1.1111 = data.frame(slack.lab.1.1111)
 ```
 
 ## Prepare Data
 
 ```{r}
 # Find length of the no_vpn table
-n_noVPN = length(lab1_noVPN$flowInd)
+n_noVPN = length(slack.lab.1.noVPN$flowInd)
 n_noVPN
 # Find length of the vpn table
-n_VPN = length(lab1_1111$flowInd)
+n_VPN = length(slack.lab.1.1111$flowInd)
 n_VPN
 
 if (n_noVPN > n_VPN) {
@@ -63,16 +63,16 @@ if (n_noVPN > n_VPN) {
 }
 
 # Define Training set & Testing set
-prop = nTrain/(nrow(lab1_noVPN))
+prop = nTrain/(nrow(slack.lab.1.noVPN))
 prop
 set.seed(123)
-trnrows_noVPN  <- sample(nrow(lab1_noVPN),nrow(lab1_noVPN)*prop)
-dtrain_noVPN <- lab1_noVPN[ trnrows_noVPN,]
-dtest_noVPN  <- lab1_noVPN[-trnrows_noVPN,]
+trnrows_noVPN  <- sample(nrow(slack.lab.1.noVPN),nrow(slack.lab.1.noVPN)*prop)
+dtrain_noVPN <- slack.lab.1.noVPN[ trnrows_noVPN,]
+dtest_noVPN  <- slack.lab.1.noVPN[-trnrows_noVPN,]
 
-trnrows_1111  <- sample(nrow(lab1_1111),nrow(lab1_1111)*0.7)
-dtrain_1111 <- lab1_1111[ trnrows_1111,]
-dtest_1111  <- lab1_1111[-trnrows_1111,]
+trnrows_1111  <- sample(nrow(slack.lab.1.1111),nrow(slack.lab.1.1111)*0.7)
+dtrain_1111 <- slack.lab.1.1111[ trnrows_1111,]
+dtest_1111  <- slack.lab.1.1111[-trnrows_1111,]
 
 dtrain <- rbind(dtrain_noVPN,dtrain_1111)
 dtest <- rbind(dtest_1111,dtest_noVPN)
@@ -118,39 +118,40 @@ confusionMatrix(predictions, dtest$isVPN)
 
 ## Load more files
 ```{r}
-lab3_noVPN = read.csv("slackPcapFixGapLab3_flows.csv")
-lab3_1111 = read.csv("slackPcapFixGapLab3_1111_flows.csv")
+slack.lab.3.noVPN = read.csv("slackPcapFixGapLab3_flows.csv")
+slack.lab.3.1111 = read.csv("slackPcapFixGapLab3_1111_flows.csv")
 
 
 # Drop Src.ipaddr && Dest.ipaddr && start,end time && mac
 drops <- c("srcIP",  "dstIP","srcMac", "dstMac", "timeFirst", "timeLast",
-          "srcIPCC", "dstIPCC", "srcIPOrg", "dstIPOrg", "srcMac_dstMac_numP", "dstPortClass", "srcMacLbl_dstMacLbl", "ethVlanID")
+          "srcIPCC", "dstIPCC", "srcIPOrg", "dstIPOrg", "srcMac_dstMac_numP", "dstPortClass", "srcMacLbl_dstMacLbl", "ethVlanID",
+          "hdrDesc")
 #"srcIPOrg", "dstIPOrg"
-lab3_noVPN <- lab3_noVPN[, !(names(lab3_noVPN) %in% drops)]
-lab3_1111 <- lab3_1111[, !(names(lab3_1111) %in% drops)]
-sum(is.na(lab3_noVPN))
-sum(is.na(lab3_1111))
+slack.lab.3.noVPN <- slack.lab.3.noVPN[, !(names(slack.lab.3.noVPN) %in% drops)]
+slack.lab.3.1111 <- slack.lab.3.1111[, !(names(slack.lab.3.1111) %in% drops)]
+sum(is.na(slack.lab.3.noVPN))
+sum(is.na(slack.lab.3.1111))
 
 # Add a new column, isVPN, set to 0 for no_vpn, 1 for 1111
-lab3_noVPN$isVPN <- 0
-lab3_1111$isVPN <- 1
+slack.lab.3.noVPN$isVPN <- 0
+slack.lab.3.1111$isVPN <- 1
 
 # Show summary
-lab3_noVPN = data.frame(lab3_noVPN)
-lab3_1111 = data.frame(lab3_1111)
+slack.lab.3.noVPN = data.frame(slack.lab.3.noVPN)
+slack.lab.3.1111 = data.frame(slack.lab.3.1111)
 
-lab3 <- rbind(lab3_1111,lab3_noVPN)
+slack.lab.3.data <- rbind(slack.lab.3.1111,slack.lab.3.noVPN)
 
 # Remove all columns with only 1 unique value
-lab3 <- lab3 %>% select(where(~ n_distinct(.) > 1))
+slack.lab.3.data <- slack.lab.3.data %>% select(where(~ n_distinct(.) > 1))
 
-nrow(lab3)
-ncol(lab3)
+nrow(slack.lab.3.data)
+ncol(slack.lab.3.data)
 
 ```
 
 ## Predicate
 ```{r}
-predictions = predict(C45Fit, newdata = lab3)
-confusionMatrix(predictions, as.factor(lab3$isVPN))
+predictions = predict(C45Fit, newdata = slack.lab.3.data)
+confusionMatrix(predictions, as.factor(slack.lab.3.data$isVPN))
 ```
