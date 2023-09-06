@@ -258,37 +258,80 @@ confMatrixes.lab.8$overall
 confMatrixes.res.3$overall
 ```
 
+
+## Data process function
+```{r}
+process_slack_data <- function(data) {
+  data.noVPN <- get(paste(data, "noVPN", sep = "."))
+  data.1111 <- get(paste(data, "1111", sep = "."))
+  
+  data.prop = nrow(data.1111)*0.7 / nrow(data.noVPN)
+  
+  data.noVPN.trnRows  <- sample(nrow(data.noVPN),nrow(data.noVPN)*data.prop)
+  data.noVPN.dtrain <- data.noVPN[ data.noVPN.trnRows,]
+  data.noVPN.dtest  <- data.noVPN[-data.noVPN.trnRows,]
+
+  data.1111.trnRows <- sample(nrow(data.1111),nrow(data.1111)*0.7)
+  data.1111.dtrain <- data.1111[ data.1111.trnRows,]
+  data.1111.dtest  <- data.1111[-data.1111.trnRows,]
+
+  data.dtrain <- rbind(data.noVPN.dtrain,data.1111.dtrain)
+  data.dtest <- rbind(data.noVPN.dtest,data.1111.dtest)
+
+  data.dtrain$isVPN <- as.factor(data.dtrain$isVPN)
+  data.dtest$isVPN <- as.factor(data.dtest$isVPN)
+  
+  assign(paste(data, "dtest", sep = "."), data.dtest, envir = globalenv())
+  assign(paste(data, "dtrain", sep = "."), data.dtrain, envir = globalenv())
+}
+
+```
+
+
 # Train model with more data
 ```{r}
 slack.lab.noVPN <- rbind(slack.lab.10.noVPN,slack.lab.1.noVPN,slack.lab.3.noVPN,
                         slack.lab.6.noVPN,slack.lab.8.noVPN)
 slack.lab.1111 <- rbind(slack.lab.10.1111,slack.lab.1.1111,slack.lab.3.1111,
                         slack.lab.6.1111,slack.lab.8.1111)
+
+slack.res.noVPN <- rbind(slack.res.10.noVPN,slack.res.1.noVPN,slack.res.3.noVPN,
+                         slack.res.6.noVPN,slack.res.8.noVPN)
+slack.res.1111 <- rbind(slack.res.10.1111,slack.res.1.1111,slack.res.3.1111,
+                        slack.res.6.1111,slack.res.8.1111)
+slack.res.data <- rbind(slack.res.noVPN, slack.res.1111)
+slack.res.data$isVPN <- as.factor(slack.res.data$isVPN)
+
 nrow(slack.lab.noVPN)
 nrow(slack.lab.1111)
 
-slack.lab.prop = nrow(slack.lab.1111)*0.7 / nrow(slack.lab.noVPN)
+process_slack_data("slack.lab")
+slack.lab.dtrain
 
-slack.lab.noVPN.trnRows  <- sample(nrow(slack.lab.noVPN),nrow(slack.lab.noVPN)*slack.lab.prop)
-slack.lab.noVPN.dtrain <- slack.lab.noVPN[ slack.lab.noVPN.trnRows,]
-slack.lab.noVPN.dtest  <- slack.lab.noVPN[-slack.lab.noVPN.trnRows,]
+process_slack_data("slack.res")
+slack.res.dtrain
 
-slack.lab.1111.trnRows <- sample(nrow(slack.lab.1111),nrow(slack.lab.1111)*0.7)
-slack.lab.1111.dtrain <- slack.lab.1111[ slack.lab.1111.trnRows,]
-slack.lab.1111.dtest  <- slack.lab.1111[-slack.lab.1111.trnRows,]
+slack.res.dtrain <- slack.res.dtrain %>% select(where(~ n_distinct(.) > 1))
+slack.res.dtest <- slack.res.dtest %>% select(where(~ n_distinct(.) > 1))
 
-slack.lab.dtrain <- rbind(slack.lab.noVPN.dtrain,slack.lab.1111.dtrain)
-slack.lab.dtest <- rbind(slack.lab.1111.dtest,slack.lab.noVPN.dtest)
-
-slack.lab.dtrain$isVPN <- as.factor(slack.lab.dtrain$isVPN)
-slack.lab.dtest$isVPN <- as.factor(slack.lab.dtest$isVPN)
+slack.noVPN <- rbind(slack.lab.noVPN, slack.res.noVPN)
+slack.1111 <- rbind(slack.lab.1111, slack.res.1111)
+process_slack_data("slack")
 
 ```
 
 
 ```{r}
 train_control<- trainControl(method="cv", number=10)
-slack.lab.C45Model <- train(isVPN ~., method="J48", data=slack.lab.dtest,
+slack.lab.C45Model <- train(isVPN ~., method="J48", data=slack.lab.dtrain,
+                tuneLength = 5,
+                trControl = train_control)
+
+slack.res.C45Model <- train(isVPN ~., method="J48", data=slack.res.dtrain,
+                tuneLength = 5,
+                trControl = train_control)
+
+slack.C45Model <- train(isVPN ~., method="J48", data=slack.dtrain,
                 tuneLength = 5,
                 trControl = train_control)
 
@@ -298,6 +341,37 @@ slack.lab.C45Model <- train(isVPN ~., method="J48", data=slack.lab.dtest,
 slack.lab.C45Model
 slack.lab.C45Model$finalModel
 
-predictions = predict(slack.lab.C45Model, newdata = slack.lab.dtest)
-confusionMatrix(predictions, slack.lab.dtest$isVPN)
+predictions.lab.lab = predict(slack.lab.C45Model, newdata = slack.lab.dtest)
+confMatrixes.lab.lab <- confusionMatrix(predictions.lab, slack.lab.dtest$isVPN)
+
+predictions.lab.res = predict(slack.lab.C45Model, newdata = slack.res.data)
+confMatrixes.lab.res <- confusionMatrix(predictions.res, slack.res.data$isVPN)
+
+confMatrixes.lab.lab$overall
+confMatrixes.lab.res$overall
+```
+
+```{r}
+slack.res.C45Model
+slack.res.C45Model$finalModel
+
+predictions.res.lab = predict(slack.res.C45Model, newdata = slack.lab.dtest)
+confMatrixes.res.lab <- confusionMatrix(predictions.res.lab, slack.lab.dtest$isVPN)
+
+predictions.res.res = predict(slack.res.C45Model, newdata = slack.res.dtest)
+confMatrixes.res.res <- confusionMatrix(predictions.res.res, slack.res.dtest$isVPN)
+
+confMatrixes.res.lab$overall
+confMatrixes.res.res$overall
+
+```
+
+```{r}
+slack.C45Model
+slack.C45Model$finalModel
+
+predictions.lab = predict(slack.C45Model, newdata = slack.dtest)
+confMatrixes.lab <- confusionMatrix(predictions.lab, slack.dtest$isVPN)
+
+confMatrixes.lab$overall
 ```
