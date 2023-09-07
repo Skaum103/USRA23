@@ -283,6 +283,7 @@ process_slack_data <- function(data) {
   
   assign(paste(data, "dtest", sep = "."), data.dtest, envir = globalenv())
   assign(paste(data, "dtrain", sep = "."), data.dtrain, envir = globalenv())
+  assign(paste(data, "data", sep = "."), rbind(data.dtrain,data.dtest), envir = globalenv())
 }
 
 ```
@@ -342,10 +343,10 @@ slack.lab.C45Model
 slack.lab.C45Model$finalModel
 
 predictions.lab.lab = predict(slack.lab.C45Model, newdata = slack.lab.dtest)
-confMatrixes.lab.lab <- confusionMatrix(predictions.lab, slack.lab.dtest$isVPN)
+confMatrixes.lab.lab <- confusionMatrix(predictions.lab.lab, slack.lab.dtest$isVPN)
 
 predictions.lab.res = predict(slack.lab.C45Model, newdata = slack.res.data)
-confMatrixes.lab.res <- confusionMatrix(predictions.res, slack.res.data$isVPN)
+confMatrixes.lab.res <- confusionMatrix(predictions.lab.res, slack.res.data$isVPN)
 
 confMatrixes.lab.lab$overall
 confMatrixes.lab.res$overall
@@ -374,4 +375,55 @@ predictions.lab = predict(slack.C45Model, newdata = slack.dtest)
 confMatrixes.lab <- confusionMatrix(predictions.lab, slack.dtest$isVPN)
 
 confMatrixes.lab$overall
+```
+
+# Try Random Forest Approach, Load packages
+```{r}
+# Installing package
+install.packages("caTools")       # For sampling the dataset
+install.packages("randomForest")  # For implementing random forest algorithm
+  
+# Loading package
+library(caTools)
+library(randomForest)
+
+```
+
+# Split Data
+```{r}
+# Splitting data in train and test data
+split <- sample.split(slack.lab.data, SplitRatio = 0.7)
+split
+
+train <- subset(slack.lab.data, split == "TRUE")
+test <- subset(slack.lab.data, split == "FALSE")
+
+
+# Fitting Random Forest to the train dataset
+set.seed(1003)  # Setting seed
+classifier_RF = randomForest(x = train[-81],
+                             y = train$isVPN,
+                             ntree = 500)
+  
+classifier_RF
+
+# Importance plot
+importance(classifier_RF)
+  
+# Variable importance plot
+varImpPlot(classifier_RF)
+```
+
+
+# Validation & Prediction
+```{r}
+# Predicting the Test set results
+y_pred = predict(classifier_RF, newdata = test[-81])
+y_pred.res = predict(classifier_RF, newdata = slack.res.data[-81])
+
+# Confusion Matrix
+confusion_mtx = confusionMatrix(y_pred, test$isVPN)
+confusion_mtx.res = confusionMatrix(y_pred.res, slack.res.data$isVPN)
+confusion_mtx
+confusion_mtx.res
 ```
