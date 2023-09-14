@@ -445,6 +445,80 @@ confusion_mtx.res
 confusion_mtx.res.lab
 ```
 
+# Load noARP Files
+```{r}
+# Data in residence
+slack.res.10.noVPN.noARP = read.csv("t2/slack/none/res/noARP/slackPcapFixGapRes11_noARP_flows.csv")
+slack.res.10.1111.noARP = read.csv("t2/slack/1.1.1.1/res/noARP/slackPcapFixGapRes10_1111_noARP_flows.csv")
+slack.res.1.noVPN.noARP = read.csv("t2/slack/none/res/noARP/slackPcapFixGapRes1_noARP_flows.csv")
+slack.res.1.1111.noARP = read.csv("t2/slack/1.1.1.1/res/noARP/slackPcapFixGapRes1_1111_noARP_flows.csv")
+slack.res.3.noVPN.noARP = read.csv("t2/slack/none/res/noARP/slackPcapFixGapRes3_noARP_flows.csv")
+slack.res.3.1111.noARP = read.csv("t2/slack/1.1.1.1/res/noARP/slackPcapFixGapRes3_1111_noARP_flows.csv")
+slack.res.6.noVPN.noARP = read.csv("t2/slack/none/res/noARP/slackPcapFixGapRes6_noARP_flows.csv")
+slack.res.6.1111.noARP = read.csv("t2/slack/1.1.1.1/res/noARP/slackPcapFixGapRes6_1111_noARP_flows.csv")
+slack.res.8.noVPN.noARP = read.csv("t2/slack/none/res/noARP/slackPcapFixGapRes8_noARP_flows.csv")
+slack.res.8.1111.noARP = read.csv("t2/slack/1.1.1.1/res/noARP/slackPcapFixGapRes8_1111_noARP_flows.csv")
+
+# Data in residence
+slack.res.10.noVPN.noARP <- slack.res.10.noVPN.noARP[, !(names(slack.res.10.noVPN.noARP) %in% drops)]
+slack.res.10.1111.noARP <- slack.res.10.1111.noARP[, !(names(slack.res.10.1111.noARP) %in% drops)]
+slack.res.1.noVPN.noARP <- slack.res.1.noVPN.noARP[, !(names(slack.res.1.noVPN.noARP) %in% drops)]
+slack.res.1.1111.noARP <- slack.res.1.1111.noARP[, !(names(slack.res.1.1111.noARP) %in% drops)]
+slack.res.3.noVPN.noARP <- slack.res.3.noVPN.noARP[, !(names(slack.res.3.noVPN.noARP) %in% drops)]
+slack.res.3.1111.noARP <- slack.res.3.1111.noARP[, !(names(slack.res.3.1111.noARP) %in% drops)]
+slack.res.6.noVPN.noARP <- slack.res.6.noVPN.noARP[, !(names(slack.res.6.noVPN.noARP) %in% drops)]
+slack.res.6.1111.noARP <- slack.res.6.1111.noARP[, !(names(slack.res.6.1111.noARP) %in% drops)]
+slack.res.8.noVPN.noARP <- slack.res.8.noVPN.noARP[, !(names(slack.res.8.noVPN.noARP) %in% drops)]
+slack.res.8.1111.noARP <- slack.res.8.1111.noARP[, !(names(slack.res.8.1111.noARP) %in% drops)]
+
+# Data in residence
+slack.res.10.noVPN.noARP$isVPN <- 0
+slack.res.10.1111.noARP$isVPN <- 1
+slack.res.1.noVPN.noARP$isVPN <- 0
+slack.res.1.1111.noARP$isVPN <- 1
+slack.res.3.noVPN.noARP$isVPN <- 0
+slack.res.3.1111.noARP$isVPN <- 1
+slack.res.6.noVPN.noARP$isVPN <- 0
+slack.res.6.1111.noARP$isVPN <- 1
+slack.res.8.noVPN.noARP$isVPN <- 0
+slack.res.8.1111.noARP$isVPN <- 1
+
+slack.res.10.noVPN.noARP = data.frame(slack.res.10.noVPN.noARP)
+slack.res.10.1111.noARP = data.frame(slack.res.10.1111.noARP)
+slack.res.1.noVPN.noARP = data.frame(slack.res.1.noVPN.noARP)
+slack.res.1.1111.noARP = data.frame(slack.res.1.1111.noARP)
+slack.res.3.noVPN.noARP = data.frame(slack.res.3.noVPN.noARP)
+slack.res.3.1111.noARP = data.frame(slack.res.3.1111.noARP)
+slack.res.6.noVPN.noARP = data.frame(slack.res.6.noVPN.noARP)
+slack.res.6.1111.noARP = data.frame(slack.res.6.1111.noARP)
+slack.res.8.noVPN.noARP = data.frame(slack.res.8.noVPN.noARP)
+slack.res.8.1111.noARP = data.frame(slack.res.8.1111.noARP)
+
+slack.res.noVPN.noARP <- rbind(slack.res.10.noVPN.noARP,slack.res.1.noVPN.noARP,slack.res.3.noVPN.noARP,
+                         slack.res.6.noVPN.noARP,slack.res.8.noVPN.noARP)
+slack.res.1111.noARP <- rbind(slack.res.10.1111.noARP,slack.res.1.1111.noARP,slack.res.3.1111.noARP,
+                        slack.res.6.1111.noARP,slack.res.8.1111.noARP)
+slack.res.data.noARP <- rbind(slack.res.noVPN.noARP, slack.res.1111.noARP)
+slack.res.data.noARP$isVPN <- as.factor(slack.res.data.noARP$isVPN)
+
+```
+
+# Predict again
+```{r}
+# C4.5
+predictions.lab.res.noARP = predict(slack.lab.C45Model, newdata = slack.res.data.noARP)
+confMatrixes.lab.res.noARP <- confusionMatrix(predictions.lab.res.noARP, slack.res.data.noARP$isVPN)
+
+confMatrixes.lab.res.noARP$overall
+
+# Random Forest
+y_pred.lab.res.noARP = predict(slack.lab.classifier_RF, newdata = slack.res.data.noARP[-81])
+confusion_mtx.lab.res.noARP = confusionMatrix(y_pred.lab.res.noARP, slack.res.data.noARP$isVPN)
+confusion_mtx.lab.res.noARP
+
+```
+
+
 # Try apply some regulation - Lasso, Load library     
 ```{r}
 library(glmnet)
