@@ -149,89 +149,42 @@ slack.res.6.1111 = read.csv("t2/slack/1.1.1.1/res/slackPcapFixGapRes6_1111_flows
 slack.res.8.noVPN = read.csv("t2/slack/none/res/slackPcapFixGapRes8_flows.csv")
 slack.res.8.1111 = read.csv("t2/slack/1.1.1.1/res/slackPcapFixGapRes8_1111_flows.csv")
 
-# Drop fields in drop table
-# Data in lab
-slack.lab.10.noVPN <- slack.lab.10.noVPN[, !(names(slack.lab.10.noVPN) %in% drops)]
-slack.lab.10.1111 <- slack.lab.10.1111[, !(names(slack.lab.10.1111) %in% drops)]
-slack.lab.1.noVPN <- slack.lab.1.noVPN[, !(names(slack.lab.1.noVPN) %in% drops)]
-slack.lab.1.1111 <- slack.lab.1.1111[, !(names(slack.lab.1.1111) %in% drops)]
-slack.lab.3.noVPN <- slack.lab.3.noVPN[, !(names(slack.lab.3.noVPN) %in% drops)]
-slack.lab.3.1111 <- slack.lab.3.1111[, !(names(slack.lab.3.1111) %in% drops)]
-slack.lab.6.noVPN <- slack.lab.6.noVPN[, !(names(slack.lab.6.noVPN) %in% drops)]
-slack.lab.6.1111 <- slack.lab.6.1111[, !(names(slack.lab.6.1111) %in% drops)]
-slack.lab.8.noVPN <- slack.lab.8.noVPN[, !(names(slack.lab.8.noVPN) %in% drops)]
-slack.lab.8.1111 <- slack.lab.8.1111[, !(names(slack.lab.8.1111) %in% drops)]
+```
 
-# Data in residence
-slack.res.10.noVPN <- slack.res.10.noVPN[, !(names(slack.res.10.noVPN) %in% drops)]
-slack.res.10.1111 <- slack.res.10.1111[, !(names(slack.res.10.1111) %in% drops)]
-slack.res.1.noVPN <- slack.res.1.noVPN[, !(names(slack.res.1.noVPN) %in% drops)]
-slack.res.1.1111 <- slack.res.1.1111[, !(names(slack.res.1.1111) %in% drops)]
-slack.res.3.noVPN <- slack.res.3.noVPN[, !(names(slack.res.3.noVPN) %in% drops)]
-slack.res.3.1111 <- slack.res.3.1111[, !(names(slack.res.3.1111) %in% drops)]
-slack.res.6.noVPN <- slack.res.6.noVPN[, !(names(slack.res.6.noVPN) %in% drops)]
-slack.res.6.1111 <- slack.res.6.1111[, !(names(slack.res.6.1111) %in% drops)]
-slack.res.8.noVPN <- slack.res.8.noVPN[, !(names(slack.res.8.noVPN) %in% drops)]
-slack.res.8.1111 <- slack.res.8.1111[, !(names(slack.res.8.1111) %in% drops)]
+## Data file process function
+```{r}
+load_data <- function(data) {
+  data.noVPN <- get(paste(data, "noVPN", sep = "."))
+  data.1111 <- get(paste(data, "1111", sep = "."))
+  
+  data.noVPN <- data.noVPN[, !(names(data.noVPN) %in% drops)]
+  data.1111 <- data.1111[, !(names(data.1111) %in% drops)]
+  
+  data.noVPN$isVPN <- 0
+  data.1111$isVPN <- 1
+  
+  data.noVPN = data.frame(data.noVPN)
+  data.1111 = data.frame(data.1111)
+  data.data <- rbind(data.1111,data.noVPN)
+  
+  assign(paste(data, "noVPN", sep = "."), data.noVPN, envir = globalenv())
+  assign(paste(data, "1111", sep = "."), data.1111, envir = globalenv())
+  assign(paste(data, "data", sep = "."), data.data, envir = globalenv())
+}
+```
 
+```{r}
+load_data("slack.res.10")
+load_data("slack.res.1")
+load_data("slack.res.3")
+load_data("slack.res.6")
+load_data("slack.res.8")
 
-# Add a new column, isVPN, set to 0 for no_vpn, 1 for 1111
-# Data in lab
-slack.lab.10.noVPN$isVPN <- 0
-slack.lab.10.1111$isVPN <- 1
-slack.lab.3.noVPN$isVPN <- 0
-slack.lab.3.1111$isVPN <- 1
-slack.lab.6.noVPN$isVPN <- 0
-slack.lab.6.1111$isVPN <- 1
-slack.lab.8.noVPN$isVPN <- 0
-slack.lab.8.1111$isVPN <- 1
-
-# Data in residence
-slack.res.10.noVPN$isVPN <- 0
-slack.res.10.1111$isVPN <- 1
-slack.res.1.noVPN$isVPN <- 0
-slack.res.1.1111$isVPN <- 1
-slack.res.3.noVPN$isVPN <- 0
-slack.res.3.1111$isVPN <- 1
-slack.res.6.noVPN$isVPN <- 0
-slack.res.6.1111$isVPN <- 1
-slack.res.8.noVPN$isVPN <- 0
-slack.res.8.1111$isVPN <- 1
-
-# Show summary
-slack.lab.10.noVPN = data.frame(slack.lab.10.noVPN)
-slack.lab.10.1111 = data.frame(slack.lab.10.1111)
-slack.lab.3.noVPN = data.frame(slack.lab.3.noVPN)
-slack.lab.3.1111 = data.frame(slack.lab.3.1111)
-slack.lab.6.noVPN = data.frame(slack.lab.6.noVPN)
-slack.lab.6.1111 = data.frame(slack.lab.6.1111)
-slack.lab.8.noVPN = data.frame(slack.lab.8.noVPN)
-slack.lab.8.1111 = data.frame(slack.lab.8.1111)
-
-slack.res.10.noVPN = data.frame(slack.res.10.noVPN)
-slack.res.10.1111 = data.frame(slack.res.10.1111)
-slack.res.1.noVPN = data.frame(slack.res.1.noVPN)
-slack.res.1.1111 = data.frame(slack.res.1.1111)
-slack.res.3.noVPN = data.frame(slack.res.3.noVPN)
-slack.res.3.1111 = data.frame(slack.res.3.1111)
-slack.res.6.noVPN = data.frame(slack.res.6.noVPN)
-slack.res.6.1111 = data.frame(slack.res.6.1111)
-slack.res.8.noVPN = data.frame(slack.res.8.noVPN)
-slack.res.8.1111 = data.frame(slack.res.8.1111)
-
-slack.lab.10.data <- rbind(slack.lab.10.1111,slack.lab.10.noVPN)
-slack.lab.3.data <- rbind(slack.lab.3.1111,slack.lab.3.noVPN)
-slack.lab.6.data <- rbind(slack.lab.6.1111,slack.lab.6.noVPN)
-slack.lab.8.data <- rbind(slack.lab.8.1111,slack.lab.8.noVPN)
-
-
-slack.res.3.data <- rbind(slack.res.3.1111,slack.res.3.noVPN)
-
-print("Number of rows in slack.lab.3.data:")
-nrow(slack.lab.3.data)
-print("Number of cols in slack.lab.3.data:")
-ncol(slack.lab.3.data)
-
+load_data("slack.lab.10")
+load_data("slack.lab.1")
+load_data("slack.lab.3")
+load_data("slack.lab.6")
+load_data("slack.lab.8")
 ```
 
 ## Predicate
@@ -401,15 +354,17 @@ slack.res.rf.test <- subset(slack.res.data, split.res == "FALSE")
 
 # Fitting Random Forest to the train dataset
 set.seed(1003)  # Setting seed
+repeat_cv <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+
 slack.lab.classifier_RF = randomForest(x = slack.lab.rf.train[-81],
                              y = slack.lab.rf.train$isVPN,
-                             ntree = 500)
+                             ntree = 500,
+                             trControl = repeat_cv)
+
 slack.res.classifier_RF = randomForest(x = slack.res.rf.train[-81],
                              y = slack.res.rf.train$isVPN,
-                             ntree = 500)
-  
-slack.lab.classifier_RF
-slack.res.classifier_RF
+                             ntree = 500,
+                             trControl = repeat_cv)
 
 # Importance plot
 importance(slack.lab.classifier_RF)
@@ -431,7 +386,7 @@ y_pred.lab.res = predict(slack.lab.classifier_RF, newdata = slack.res.data[-81])
 confusion_mtx.lab = confusionMatrix(y_pred.lab, slack.lab.rf.test$isVPN)
 confusion_mtx.lab.res = confusionMatrix(y_pred.lab.res, slack.res.data$isVPN)
 confusion_mtx.lab
-confusion_mtx.lab.res
+confusion_mtx.lab.res$overall
 
 
 # Predicting the Test set results
@@ -442,8 +397,32 @@ y_pred.res.lab = predict(slack.res.classifier_RF, newdata = slack.lab.data[-81])
 confusion_mtx.res = confusionMatrix(y_pred.res, slack.res.rf.test$isVPN)
 confusion_mtx.res.lab = confusionMatrix(y_pred.res.lab, slack.lab.data$isVPN)
 confusion_mtx.res
-confusion_mtx.res.lab
+confusion_mtx.res.lab$overall
 ```
+
+## Tuned RF
+```{r}
+
+slack.lab.tuned_RF = tuneRF(x = slack.lab.rf.train[-81],
+                            y = slack.lab.rf.train$isVPN,
+                            mtryStart = 1,
+                            ntreeTry = 500,
+                            stepFactor=2, improve=0.05,
+                            trace=TRUE, doBest = TRUE 
+                             )
+
+#slack.res.classifier_RF = tuneRF(x = slack.res.rf.train[-81],
+                             #y = slack.res.rf.train$isVPN,
+                             #ntree = 500,
+                             #trControl = repeat_cv)
+
+
+tune.pred.lab.res = predict(slack.lab.tuned_RF, newdata = slack.res.data[-81])
+confusion_mtx.tune.lab.res = confusionMatrix(tune.pred.lab.res, slack.res.data$isVPN)
+confusion_mtx.tune.lab.res$overall
+```
+
+
 
 # Load noARP Files
 ```{r}
@@ -514,7 +493,7 @@ confMatrixes.lab.res.noARP$overall
 # Random Forest
 y_pred.lab.res.noARP = predict(slack.lab.classifier_RF, newdata = slack.res.data.noARP[-81])
 confusion_mtx.lab.res.noARP = confusionMatrix(y_pred.lab.res.noARP, slack.res.data.noARP$isVPN)
-confusion_mtx.lab.res.noARP
+confusion_mtx.lab.res.noARP$overall
 
 ```
 
@@ -529,15 +508,15 @@ library(tidyverse)
 ```{r}
 
 #perform k-fold cross-validation to find optimal lambda value
-x = as.matrix(slack.lab.data[-81])
-
-slack.lab.data <- slack.lab.data[, !(names(slack.lab.1.1111) %in% c("X.dir", "ipOptCpCl_Num"))]
-
-s <- slack.lab.data %>% select_if(negate(is.numeric))
-s <- select_if(slack.lab.data, is.character
-s
+#slack.lab.data <- slack.lab.data[, !(names(slack.lab.1.1111) %in% c("X.dir", "ipOptCpCl_Num"))]
+lambdas_to_try <- 10^seq(-3, 5, length.out = 100)
+slack.lab.data
+x = as.matrix(slack.lab.data[-79])
 
 cv_model <- cv.glmnet(x, slack.lab.data$isVPN, alpha = 1,
+                      lambda = lambdas_to_try,
+                      standardize = TRUE,
+                      nfolds = 10,
                       family = "binomial")
 
 #find optimal lambda value that minimizes test MSE
@@ -546,5 +525,12 @@ best_lambda
 
 #produce plot of test MSE by lambda value
 plot(cv_model) 
+
+cv_best_model <- glmnet(x, slack.lab.data$isVPN, alpha = 1,
+                      lambda = lambdas_to_try,
+                      standardize = TRUE,
+                      family = "binomial")
+
+
 
 ```
