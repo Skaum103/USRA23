@@ -420,6 +420,10 @@ slack.lab.tuned_RF = tuneRF(x = slack.lab.rf.train[-81],
 tune.pred.lab.res = predict(slack.lab.tuned_RF, newdata = slack.res.data[-81])
 confusion_mtx.tune.lab.res = confusionMatrix(tune.pred.lab.res, slack.res.data$isVPN)
 confusion_mtx.tune.lab.res$overall
+
+tune.pred.lab.lab = predict(slack.lab.tuned_RF, newdata = slack.lab.data[-81])
+confusion_mtx.tune.lab.lab = confusionMatrix(tune.pred.lab.lab, slack.lab.data$isVPN)
+confusion_mtx.tune.lab.lab$overall
 ```
 
 
@@ -495,6 +499,53 @@ y_pred.lab.res.noARP = predict(slack.lab.classifier_RF, newdata = slack.res.data
 confusion_mtx.lab.res.noARP = confusionMatrix(y_pred.lab.res.noARP, slack.res.data.noARP$isVPN)
 confusion_mtx.lab.res.noARP$overall
 
+tune.pred.lab.res.noARP = predict(slack.lab.tuned_RF, newdata = slack.res.data.noARP[-81])
+confusion_mtx.tune.lab.res.noARP = confusionMatrix(tune.pred.lab.res.noARP, slack.res.data.noARP$isVPN)
+confusion_mtx.tune.lab.res.noARP$overall
+```
+
+## For Streaming, Load files
+```{r}
+twitch.lab.10.noVPN = read.csv("t2/streaming/none/lab/streamingCapLab10_flows.csv")
+twitch.lab.1.noVPN = read.csv("t2/streaming/none/lab/streamingCapLab1_flows.csv")
+twitch.lab.3.noVPN = read.csv("t2/streaming/none/lab/streamingCapLab3_flows.csv")
+twitch.lab.6.noVPN = read.csv("t2/streaming/none/lab/streamingCapLab6_flows.csv")
+twitch.lab.8.noVPN = read.csv("t2/streaming/none/lab/streamingCapLab8_flows.csv")
+
+twitch.lab.10.1111 = read.csv("t2/streaming/1.1.1.1/lab/streamingCapLab10_1111_flows.csv")
+twitch.lab.1.1111 = read.csv("t2/streaming/1.1.1.1/lab/streamingCapLab1_1111_flows.csv")
+twitch.lab.3.1111 = read.csv("t2/streaming/1.1.1.1/lab/streamingCapLab3_1111_flows.csv")
+twitch.lab.6.1111 = read.csv("t2/streaming/1.1.1.1/lab/streamingCapLab6_1111_flows.csv")
+twitch.lab.8.1111 = read.csv("t2/streaming/1.1.1.1/lab/streamingCapLab8_1111_flows.csv")
+
+twitch.res.10.noVPN = read.csv("t2/streaming/none/res/streamingCapRes10_flows.csv")
+twitch.res.1.noVPN = read.csv("t2/streaming/none/res/streamingCapRes1_flows.csv")
+twitch.res.3.noVPN = read.csv("t2/streaming/none/res/streamingCapRes3_flows.csv")
+twitch.res.6.noVPN = read.csv("t2/streaming/none/res/streamingCapRes6_flows.csv")
+twitch.res.8.noVPN = read.csv("t2/streaming/none/res/streamingCapRes8_flows.csv")
+
+load_data("twitch.lab.10")
+load_data("twitch.lab.1")
+load_data("twitch.lab.3")
+load_data("twitch.lab.6")
+load_data("twitch.lab.8")
+
+twitch.lab.noVPN <- rbind(twitch.lab.10.noVPN,twitch.lab.1.noVPN,twitch.lab.3.noVPN,
+                        twitch.lab.6.noVPN,twitch.lab.8.noVPN)
+twitch.lab.1111 <- rbind(twitch.lab.10.1111,twitch.lab.1.1111,twitch.lab.3.1111,
+                        twitch.lab.6.1111,twitch.lab.8.1111)
+twitch.lab.data <- rbind(twitch.lab.noVPN,twitch.lab.1111)
+
+twitch.lab.1111
+
+twitch.lab.data
+
+
+```
+```{r}
+predictions.slack.twitch.lab.c45 = predict(slack.res.C45Model, newdata = twitch.lab.data)
+confMatrixes.slack.twitch.lab.c45 <- confusionMatrix(table(predictions.slack.twitch.lab.c45, twitch.lab.data$isVPN))
+confMatrixes.slack.twitch.lab.c45$overall
 ```
 
 
