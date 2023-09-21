@@ -302,6 +302,8 @@ eva.slack.c45.lab.lab
 
 predictions.lab.res = predict(slack.lab.C45Model, newdata = slack.res.data)
 confMatrixes.lab.res <- confusionMatrix(predictions.lab.res, slack.res.data$isVPN)
+eva.slack.c45.lab.res <- confMatrixes.lab.res$byClass
+eva.slack.c45.lab.res
 
 confMatrixes.lab.lab$overall
 confMatrixes.lab.res$overall
@@ -313,9 +315,13 @@ slack.res.C45Model$finalModel
 
 predictions.res.lab = predict(slack.res.C45Model, newdata = slack.lab.dtest)
 confMatrixes.res.lab <- confusionMatrix(predictions.res.lab, slack.lab.dtest$isVPN)
+eva.slack.c45.res.lab <- confMatrixes.res.lab$byClass
+eva.slack.c45.res.lab
 
 predictions.res.res = predict(slack.res.C45Model, newdata = slack.res.dtest)
 confMatrixes.res.res <- confusionMatrix(predictions.res.res, slack.res.dtest$isVPN)
+eva.slack.c45.res.res <- confMatrixes.res.res$byClass
+eva.slack.c45.res.res
 
 confMatrixes.res.lab$overall
 confMatrixes.res.res$overall
@@ -387,7 +393,9 @@ y_pred.lab.res = predict(slack.lab.classifier_RF, newdata = slack.res.data[-81])
 # Confusion Matrix
 confusion_mtx.lab = confusionMatrix(y_pred.lab, slack.lab.rf.test$isVPN)
 confusion_mtx.lab.res = confusionMatrix(y_pred.lab.res, slack.res.data$isVPN)
-confusion_mtx.lab
+confusion_mtx.lab$byClass
+confusion_mtx.lab.res$byClass
+confusion_mtx.lab$overall
 confusion_mtx.lab.res$overall
 
 
@@ -398,7 +406,9 @@ y_pred.res.lab = predict(slack.res.classifier_RF, newdata = slack.lab.data[-81])
 # Confusion Matrix
 confusion_mtx.res = confusionMatrix(y_pred.res, slack.res.rf.test$isVPN)
 confusion_mtx.res.lab = confusionMatrix(y_pred.res.lab, slack.lab.data$isVPN)
-confusion_mtx.res
+confusion_mtx.res$byClass
+confusion_mtx.res.lab$byClass
+confusion_mtx.res$overall
 confusion_mtx.res.lab$overall
 ```
 
@@ -421,10 +431,12 @@ slack.lab.tuned_RF = tuneRF(x = slack.lab.rf.train[-81],
 
 tune.pred.lab.res = predict(slack.lab.tuned_RF, newdata = slack.res.data[-81])
 confusion_mtx.tune.lab.res = confusionMatrix(tune.pred.lab.res, slack.res.data$isVPN)
+confusion_mtx.tune.lab.res$byClass
 confusion_mtx.tune.lab.res$overall
 
 tune.pred.lab.lab = predict(slack.lab.tuned_RF, newdata = slack.lab.data[-81])
 confusion_mtx.tune.lab.lab = confusionMatrix(tune.pred.lab.lab, slack.lab.data$isVPN)
+confusion_mtx.tune.lab.lab$byClass
 confusion_mtx.tune.lab.lab$overall
 ```
 
