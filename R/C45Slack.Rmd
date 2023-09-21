@@ -561,15 +561,18 @@ confMatrixes.slack.twitch.lab.c45$overall
 ```{r}
 library(glmnet)
 library(tidyverse)
+slack.lab.data <- slack.lab.data[, !(names(slack.lab.1.1111) %in% c("X.dir", "ipOptCpCl_Num"))]
+slack.res.data <- slack.res.data[, !(names(slack.lab.1.1111) %in% c("X.dir", "ipOptCpCl_Num"))]
+ncol(slack.lab.data)
+ncol(slack.res.data)
 ```
 
 
 ```{r}
 
 #perform k-fold cross-validation to find optimal lambda value
-#slack.lab.data <- slack.lab.data[, !(names(slack.lab.1.1111) %in% c("X.dir", "ipOptCpCl_Num"))]
+
 lambdas_to_try <- 10^seq(-3, 5, length.out = 100)
-slack.lab.data
 x = as.matrix(slack.lab.data[-79])
 
 cv_model <- cv.glmnet(x, slack.lab.data$isVPN, alpha = 1,
@@ -586,10 +589,22 @@ best_lambda
 plot(cv_model) 
 
 cv_best_model <- glmnet(x, slack.lab.data$isVPN, alpha = 1,
-                      lambda = lambdas_to_try,
+                      lambda = best_lambda,
                       standardize = TRUE,
                       family = "binomial")
 
 
 
+
+```
+
+## Validation
+```{r}
+predictions.slack.lab.lab <- predict(cv_best_model, s = best_lambda, x, type = "response")
+#threshold <- 0.5
+#predicted_classes <- ifelse(predictions.slack.lab.lab > threshold,1,0)
+#table(predicted_classes,slack.lab.data$isVPN)
+x.res <- as.matrix(slack.res.data[-79])
+confusion.glmnet(predictions.slack.lab.lab,newx=x,newy=slack.lab.data$isVPN)
+confusion.glmnet(predictions.slack.lab.lab,newx=x.res,newy=slack.res.data$isVPN)
 ```
