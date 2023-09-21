@@ -600,11 +600,21 @@ cv_best_model <- glmnet(x, slack.lab.data$isVPN, alpha = 1,
 
 ## Validation
 ```{r}
-predictions.slack.lab.lab <- predict(cv_best_model, s = best_lambda, x, type = "response")
-#threshold <- 0.5
-#predicted_classes <- ifelse(predictions.slack.lab.lab > threshold,1,0)
-#table(predicted_classes,slack.lab.data$isVPN)
 x.res <- as.matrix(slack.res.data[-79])
-confusion.glmnet(predictions.slack.lab.lab,newx=x,newy=slack.lab.data$isVPN)
-confusion.glmnet(predictions.slack.lab.lab,newx=x.res,newy=slack.res.data$isVPN)
+predictions.slack.lab.lab <- predict(cv_best_model, s = best_lambda, x, type = "response")
+predictions.slack.lab.res <- predict(cv_best_model, s = best_lambda, x.res, type = "response")
+threshold <- 0.5
+predicted_classes <- ifelse(predictions.slack.lab.lab > threshold,1,0)
+confmtx.lab <- confusionMatrix(table(predicted_classes,slack.lab.data$isVPN))
+confmtx.lab$byClass
+confmtx.lab$overall
+
+
+predicted_classes.res <- ifelse(predictions.slack.lab.res > threshold,1,0)
+confmtx.res <- confusionMatrix(table(predicted_classes.res,slack.res.data$isVPN))
+confmtx.res$byClass
+confmtx.res$overall
+
+#confusion.glmnet(predictions.slack.lab.lab,newx=x,newy=slack.lab.data$isVPN)
+#confusion.glmnet(predictions.slack.lab.res,newx=x.res,newy=slack.res.data$isVPN)
 ```
