@@ -1,0 +1,56 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+### Preparation
+
+Run this cell to clear the variables in your global R environment.
+
+```{r}
+rm(list = ls())
+ls()
+```
+
+## Libraries
+
+```{r}
+library(caret)
+library(RWeka)
+library(dplyr)
+```
+
+
+## Define basics
+```{r}
+# Drop Src.ipaddr && Dest.ipaddr && start,end time && mac
+drops <- c("srcIP",  "dstIP","srcMac", "dstMac", "timeFirst", "timeLast",
+          "srcIPCC", "dstIPCC", "srcIPOrg", "dstIPOrg", "srcMac_dstMac_numP", "dstPortClass", "srcMacLbl_dstMacLbl", "ethVlanID",
+          "hdrDesc",
+          "vlanID",
+          "icmpBFTypH_TypL_Code")
+
+```
+
+## Data file process function
+```{r}
+load_data <- function(data) {
+  data.noVPN <- get(paste(data, "noVPN", sep = "."))
+  data.1111 <- get(paste(data, "1111", sep = "."))
+  
+  data.noVPN <- data.noVPN[, !(names(data.noVPN) %in% drops)]
+  data.1111 <- data.1111[, !(names(data.1111) %in% drops)]
+  
+  data.noVPN$isVPN <- 0
+  data.1111$isVPN <- 1
+  
+  data.noVPN = data.frame(data.noVPN)
+  data.1111 = data.frame(data.1111)
+  data.data <- rbind(data.1111,data.noVPN)
+  
+  assign(paste(data, "noVPN", sep = "."), data.noVPN, envir = globalenv())
+  assign(paste(data, "1111", sep = "."), data.1111, envir = globalenv())
+  assign(paste(data, "data", sep = "."), data.data, envir = globalenv())
+}
+```
