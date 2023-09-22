@@ -398,6 +398,7 @@ confusion_mtx.lab.res$byClass
 confusion_mtx.lab$overall
 confusion_mtx.lab.res$overall
 
+print("------------------")
 
 # Predicting the Test set results
 y_pred.res = predict(slack.res.classifier_RF, newdata = slack.res.rf.test[-81])
@@ -406,7 +407,9 @@ y_pred.res.lab = predict(slack.res.classifier_RF, newdata = slack.lab.data[-81])
 # Confusion Matrix
 confusion_mtx.res = confusionMatrix(y_pred.res, slack.res.rf.test$isVPN)
 confusion_mtx.res.lab = confusionMatrix(y_pred.res.lab, slack.lab.data$isVPN)
+print("res_byclass")
 confusion_mtx.res$byClass
+print("lab_byclass")
 confusion_mtx.res.lab$byClass
 confusion_mtx.res$overall
 confusion_mtx.res.lab$overall
