@@ -19,6 +19,8 @@ ls()
 library(caret)
 library(RWeka)
 library(dplyr)
+library(caTools)
+library(randomForest)
 ```
 
 
@@ -230,12 +232,66 @@ confMatrixes.res.lab$overall
 ## Models - Random Forest
 ```{r}
 
+# Fitting Random Forest to the train dataset
+set.seed(1003)  # Setting seed
+repeat_cv <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+
+twitch.lab.classifier_RF = randomForest(x = twitch.lab.dtrain[-81],
+                             y = twitch.lab.dtrain$isVPN,
+                             ntree = 500,
+                             trControl = repeat_cv)
+
+twitch.res.classifier_RF = randomForest(x = twitch.res.dtrain[-81],
+                             y = twitch.res.dtrain$isVPN,
+                             ntree = 500,
+                             trControl = repeat_cv)
+
+# Importance plot
+importance(twitch.lab.classifier_RF)
+importance(twitch.res.classifier_RF)
+  
+# Variable importance plot
+varImpPlot(twitch.lab.classifier_RF)
+varImpPlot(twitch.res.classifier_RF)
+
 ```
 
 
-## Validation - Random Forest
+## Validation - Random Forest - lab
 ```{r}
 
+print("lab")
+predictions.lab.lab.rf = predict(twitch.lab.classifier_RF, newdata = twitch.lab.dtest)
+confMatrixes.lab.lab.rf <- confusionMatrix(predictions.lab.lab.rf, twitch.lab.dtest$isVPN)
+eva.twitch.c45.lab.lab.rf <- confMatrixes.lab.lab.rf$byClass
+eva.twitch.c45.lab.lab.rf
+confMatrixes.lab.lab.rf$overall
+
+print("res")
+predictions.lab.res.rf = predict(twitch.lab.classifier_RF, newdata = twitch.res.data)
+confMatrixes.lab.res.rf <- confusionMatrix(predictions.lab.res.rf, twitch.res.data$isVPN)
+eva.twitch.c45.lab.res.rf <- confMatrixes.lab.res.rf$byClass
+eva.twitch.c45.lab.res.rf
+confMatrixes.lab.res.rf$overall
+
+```
+
+
+## Validation - Random Forest - res
+```{r}
+print("res")
+predictions.res.res.rf = predict(twitch.res.classifier_RF, newdata = twitch.res.dtest)
+confMatrixes.res.res.rf <- confusionMatrix(predictions.res.res.rf, twitch.res.dtest$isVPN)
+eva.twitch.c45.res.res.rf <- confMatrixes.res.res.rf$byClass
+eva.twitch.c45.res.res.rf
+confMatrixes.res.res.rf$overall
+
+print("lab")
+predictions.res.lab.rf = predict(twitch.res.classifier_RF, newdata = twitch.lab.data)
+confMatrixes.res.lab.rf <- confusionMatrix(predictions.res.lab.rf, twitch.lab.data$isVPN)
+eva.twitch.c45.res.lab.rf <- confMatrixes.res.lab.rf$byClass
+eva.twitch.c45.res.lab.rf
+confMatrixes.res.lab.rf$overall
 ```
 
 ## Models - LASSO
