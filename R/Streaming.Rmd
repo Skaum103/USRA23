@@ -29,7 +29,7 @@ drops <- c("srcIP",  "dstIP","srcMac", "dstMac", "timeFirst", "timeLast",
           "srcIPCC", "dstIPCC", "srcIPOrg", "dstIPOrg", "srcMac_dstMac_numP", "dstPortClass", "srcMacLbl_dstMacLbl", "ethVlanID",
           "hdrDesc",
           "vlanID",
-          "icmpBFTypH_TypL_Code")
+          "icmpBFTypH_TypL_Code", "ipOptCnt", "ipOptCpCl_Num")
 
 ```
 
@@ -77,11 +77,11 @@ twitch.res.3.noVPN = read.csv("t2/streaming/none/res/streamingCapRes3_flows.csv"
 twitch.res.6.noVPN = read.csv("t2/streaming/none/res/streamingCapRes6_flows.csv")
 twitch.res.8.noVPN = read.csv("t2/streaming/none/res/streamingCapRes8_flows.csv")
 
-load_data("twitch.lab.10")
-load_data("twitch.lab.1")
-load_data("twitch.lab.3")
-load_data("twitch.lab.6")
-load_data("twitch.lab.8")
+twitch.res.10.1111 = read.csv("t2/streaming/1.1.1.1/res/streamingCapRes10_1111_flows.csv")
+twitch.res.1.1111 = read.csv("t2/streaming/1.1.1.1/res/streamingCapRes1_1111_flows.csv")
+twitch.res.3.1111 = read.csv("t2/streaming/1.1.1.1/res/streamingCapRes3_1111_flows.csv")
+twitch.res.6.1111 = read.csv("t2/streaming/1.1.1.1/res/streamingCapRes6_1111_flows.csv")
+twitch.res.8.1111 = read.csv("t2/streaming/1.1.1.1/res/streamingCapRes8_1111_flows.csv")
 
 twitch.lab.noVPN <- rbind(twitch.lab.10.noVPN,twitch.lab.1.noVPN,twitch.lab.3.noVPN,
                         twitch.lab.6.noVPN,twitch.lab.8.noVPN)
@@ -89,28 +89,143 @@ twitch.lab.1111 <- rbind(twitch.lab.10.1111,twitch.lab.1.1111,twitch.lab.3.1111,
                         twitch.lab.6.1111,twitch.lab.8.1111)
 twitch.lab.data <- rbind(twitch.lab.noVPN,twitch.lab.1111)
 
+twitch.res.noVPN <- rbind(twitch.res.10.noVPN,twitch.res.1.noVPN,twitch.res.3.noVPN,
+                          twitch.res.6.noVPN,twitch.res.8.noVPN)
+twitch.res.1111 <- rbind(twitch.res.10.1111,twitch.res.1.1111,twitch.res.3.1111,
+                         twitch.res.6.1111,twitch.res.8.1111)
+
+twitch.data.noVPN <- rbind(twitch.lab.noVPN,twitch.res.noVPN)
+twitch.data.1111 <- rbind(twitch.lab.1111,twitch.res.1111)
+twitch.data <- rbind(twitch.data.1111,twitch.data.noVPN)
+
+
 ```
 
 
-## Clean data
+## Clean data - define cols to drop
 ```{r}
+s <- twitch.data %>% select(where(~ n_distinct(.) <= 1))
+drops <- c(drops,colnames(s))
+drops
 
+load_data("twitch.lab.10")
+load_data("twitch.lab.1")
+load_data("twitch.lab.3")
+load_data("twitch.lab.6")
+load_data("twitch.lab.8")
+
+load_data("twitch.res.10")
+load_data("twitch.res.1")
+load_data("twitch.res.3")
+load_data("twitch.res.6")
+load_data("twitch.res.8")
+
+twitch.lab.noVPN <- rbind(twitch.lab.10.noVPN,twitch.lab.1.noVPN,twitch.lab.3.noVPN,
+                        twitch.lab.6.noVPN,twitch.lab.8.noVPN)
+twitch.lab.1111 <- rbind(twitch.lab.10.1111,twitch.lab.1.1111,twitch.lab.3.1111,
+                        twitch.lab.6.1111,twitch.lab.8.1111)
+twitch.lab.data <- rbind(twitch.lab.noVPN,twitch.lab.1111)
+
+twitch.res.noVPN <- rbind(twitch.res.10.noVPN,twitch.res.1.noVPN,twitch.res.3.noVPN,
+                          twitch.res.6.noVPN,twitch.res.8.noVPN)
+twitch.res.1111 <- rbind(twitch.res.10.1111,twitch.res.1.1111,twitch.res.3.1111,
+                         twitch.res.6.1111,twitch.res.8.1111)
+
+twitch.data.noVPN <- rbind(twitch.lab.noVPN,twitch.res.noVPN)
+twitch.data.1111 <- rbind(twitch.lab.1111,twitch.res.1111)
+twitch.data <- rbind(twitch.data.1111,twitch.data.noVPN)
+
+```
+## Process data function
+```{r}
+process_data <- function(data) {
+  data.noVPN <- get(paste(data, "noVPN", sep = "."))
+  data.1111 <- get(paste(data, "1111", sep = "."))
+  
+  data.prop = nrow(data.1111)*0.7 / nrow(data.noVPN)
+  
+  data.noVPN.trnRows  <- sample(nrow(data.noVPN),nrow(data.noVPN)*data.prop)
+  data.noVPN.dtrain <- data.noVPN[ data.noVPN.trnRows,]
+  data.noVPN.dtest  <- data.noVPN[-data.noVPN.trnRows,]
+
+  data.1111.trnRows <- sample(nrow(data.1111),nrow(data.1111)*0.7)
+  data.1111.dtrain <- data.1111[ data.1111.trnRows,]
+  data.1111.dtest  <- data.1111[-data.1111.trnRows,]
+
+  data.dtrain <- rbind(data.noVPN.dtrain,data.1111.dtrain)
+  data.dtest <- rbind(data.noVPN.dtest,data.1111.dtest)
+
+  data.dtrain$isVPN <- as.factor(data.dtrain$isVPN)
+  data.dtest$isVPN <- as.factor(data.dtest$isVPN)
+  
+  assign(paste(data, "dtest", sep = "."), data.dtest, envir = globalenv())
+  assign(paste(data, "dtrain", sep = "."), data.dtrain, envir = globalenv())
+  assign(paste(data, "data", sep = "."), rbind(data.dtrain,data.dtest), envir = globalenv())
+}
 
 ```
 
+
+## Process data for trainning
+```{r}
+process_data("twitch.lab")
+process_data("twitch.res")
+
+```
 
 ## Models - C45
-```{}
-
-
-```
-
-
-## Validation - C45
 ```{r}
+train_control<- trainControl(method="cv", number=10)
+twitch.lab.C45Model <- train(isVPN ~., method="J48", data=twitch.lab.dtrain,
+                tuneLength = 5,
+                trControl = train_control)
+
+twitch.res.C45Model <- train(isVPN ~., method="J48", data=twitch.res.dtrain,
+                tuneLength = 5,
+                trControl = train_control)
 
 ```
 
+
+## Validation - C45 - lab
+```{r}
+twitch.lab.C45Model$finalModel
+
+print("lab")
+predictions.lab.lab = predict(twitch.lab.C45Model, newdata = twitch.lab.dtest)
+confMatrixes.lab.lab <- confusionMatrix(predictions.lab.lab, twitch.lab.dtest$isVPN)
+eva.twitch.c45.lab.lab <- confMatrixes.lab.lab$byClass
+eva.twitch.c45.lab.lab
+confMatrixes.lab.lab$overall
+
+print("res")
+predictions.lab.res = predict(twitch.lab.C45Model, newdata = twitch.res.data)
+confMatrixes.lab.res <- confusionMatrix(predictions.lab.res, twitch.res.data$isVPN)
+eva.twitch.c45.lab.res <- confMatrixes.lab.res$byClass
+eva.twitch.c45.lab.res
+confMatrixes.lab.res$overall
+```
+
+
+## Validation - C45 - res
+```{r}
+twitch.res.C45Model$finalModel
+
+print("res")
+predictions.res.res = predict(twitch.res.C45Model, newdata = twitch.res.dtest)
+confMatrixes.res.res <- confusionMatrix(predictions.res.res, twitch.res.dtest$isVPN)
+eva.twitch.c45.res.res <- confMatrixes.res.res$byClass
+eva.twitch.c45.res.res
+confMatrixes.res.res$overall
+
+print("lab")
+predictions.res.lab = predict(twitch.res.C45Model, newdata = twitch.lab.data)
+confMatrixes.res.lab <- confusionMatrix(predictions.res.lab, twitch.lab.data$isVPN)
+eva.twitch.c45.res.lab <- confMatrixes.res.lab$byClass
+eva.twitch.c45.res.lab
+confMatrixes.res.lab$overall
+
+```
 
 ## Models - Random Forest
 ```{r}
