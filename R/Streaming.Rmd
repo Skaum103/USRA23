@@ -297,15 +297,62 @@ confMatrixes.res.lab.rf$overall
 ```{r}
 library(glmnet)
 library(tidyverse)
-twitch.lab.data <- twitch.lab.data[, !(names(twitch.lab.data) %in% c("X.dir", "ipOptCpCl_Num"))]
-twitch.res.data <- twitch.res.data[, !(names(twitch.res.data) %in% c("X.dir", "ipOptCpCl_Num"))]
-ncol(twitch.lab.data)
-ncol(twitch.res.data)
+twitch.lab.dtrain <- twitch.lab.dtrain[, !(names(twitch.lab.dtrain) %in% c("X.dir", "ipOptCpCl_Num"))]
+twitch.res.dtrain <- twitch.res.dtrain[, !(names(twitch.res.dtrain) %in% c("X.dir", "ipOptCpCl_Num"))]
+twitch.lab.dtrain
+twitch.res.dtrain
 
 ```
 
-## Models - LASSO
+## Models - LASSO - Lab
 ```{r}
+#perform k-fold cross-validation to find optimal lambda value
+lambdas_to_try <- 10^seq(-3, 5, length.out = 100)
+x.lab = as.matrix(twitch.lab.dtrain[-80])
+
+cv_model.lab <- cv.glmnet(x.lab, twitch.lab.dtrain$isVPN, alpha = 1,
+                      lambda = lambdas_to_try,
+                      standardize = TRUE,
+                      nfolds = 10,
+                      family = "binomial")
+
+#find optimal lambda value that minimizes test MSE
+best_lambda.lab <- cv_model.lab$lambda.min
+best_lambda.lab
+
+#produce plot of test MSE by lambda value
+plot(cv_model.lab) 
+
+cv_best_model.lab <- glmnet(x.lab, twitch.lab.dtrain$isVPN, alpha = 1,
+                      lambda = best_lambda.lab,
+                      standardize = TRUE,
+                      family = "binomial")
+
+```
+
+## Models - LASSO - Res
+```{r}
+#perform k-fold cross-validation to find optimal lambda value
+lambdas_to_try <- 10^seq(-3, 5, length.out = 100)
+x.res = as.matrix(twitch.res.dtrain[-80])
+
+cv_model.res <- cv.glmnet(x.res, twitch.res.dtrain$isVPN, alpha = 1,
+                      lambda = lambdas_to_try,
+                      standardize = TRUE,
+                      nfolds = 10,
+                      family = "binomial")
+
+#find optimal lambda value that minimizes test MSE
+best_lambda.res <- cv_model.res$lambda.min
+best_lambda.res
+
+#produce plot of test MSE by lambda value
+plot(cv_model.res) 
+
+cv_best_model.res <- glmnet(x.res, twitch.res.dtrain$isVPN, alpha = 1,
+                      lambda = best_lambda.lab,
+                      standardize = TRUE,
+                      family = "binomial")
 
 
 ```
