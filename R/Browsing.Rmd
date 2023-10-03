@@ -61,44 +61,47 @@ load_data <- function(data) {
 
 ## Load data files
 ```{r}
-twitch.lab.10.noVPN = read.csv("t2/streaming/none/lab/streamingCapLab10_flows.csv")
-twitch.lab.1.noVPN = read.csv("t2/streaming/none/lab/streamingCapLab1_flows.csv")
-twitch.lab.3.noVPN = read.csv("t2/streaming/none/lab/streamingCapLab3_flows.csv")
-twitch.lab.6.noVPN = read.csv("t2/streaming/none/lab/streamingCapLab6_flows.csv")
-twitch.lab.8.noVPN = read.csv("t2/streaming/none/lab/streamingCapLab8_flows.csv")
+browsing.lab.10.noVPN = read.csv("t2/browsing/none/lab/browsingCapLab10_flows.csv")
+browsing.lab.1.noVPN = read.csv("t2/browsing/none/lab/browsingCapLab1_flows.csv")
+browsing.lab.3.noVPN = read.csv("t2/browsing/none/lab/browsingCapLab3_flows.csv")
+browsing.lab.6.noVPN = read.csv("t2/browsing/none/lab/browsingCapLab6_flows.csv")
+browsing.lab.8.noVPN = read.csv("t2/browsing/none/lab/browsingCapLab8_flows.csv")
 
-twitch.lab.10.1111 = read.csv("t2/streaming/1.1.1.1/lab/streamingCapLab10_1111_flows.csv")
-twitch.lab.1.1111 = read.csv("t2/streaming/1.1.1.1/lab/streamingCapLab1_1111_flows.csv")
-twitch.lab.3.1111 = read.csv("t2/streaming/1.1.1.1/lab/streamingCapLab3_1111_flows.csv")
-twitch.lab.6.1111 = read.csv("t2/streaming/1.1.1.1/lab/streamingCapLab6_1111_flows.csv")
-twitch.lab.8.1111 = read.csv("t2/streaming/1.1.1.1/lab/streamingCapLab8_1111_flows.csv")
+browsing.lab.10.1111 = read.csv("t2/browsing/1.1.1.1/lab/browsingCapLab10_1111_flows.csv")
+browsing.lab.1.1111 = read.csv("t2/browsing/1.1.1.1/lab/browsingCapLab1_1111_flows.csv")
+browsing.lab.3.1111 = read.csv("t2/browsing/1.1.1.1/lab/browsingCapLab3_1111_flows.csv")
+browsing.lab.6.1111 = read.csv("t2/browsing/1.1.1.1/lab/browsingCapLab6_1111_flows.csv")
+browsing.lab.8.1111 = read.csv("t2/browsing/1.1.1.1/lab/browsingCapLab8_1111_flows.csv")
 
-twitch.res.10.noVPN = read.csv("t2/streaming/none/res/streamingCapRes10_flows.csv")
-twitch.res.1.noVPN = read.csv("t2/streaming/none/res/streamingCapRes1_flows.csv")
-twitch.res.3.noVPN = read.csv("t2/streaming/none/res/streamingCapRes3_flows.csv")
-twitch.res.6.noVPN = read.csv("t2/streaming/none/res/streamingCapRes6_flows.csv")
-twitch.res.8.noVPN = read.csv("t2/streaming/none/res/streamingCapRes8_flows.csv")
+browsing.res.10.noVPN = read.csv("t2/browsing/none/res/browsingCapRes10_flows.csv")
+browsing.res.1.noVPN = read.csv("t2/browsing/none/res/browsingCapRes1_flows.csv")
+browsing.res.3.noVPN = read.csv("t2/browsing/none/res/browsingCapRes3_flows.csv")
+browsing.res.6.noVPN = read.csv("t2/browsing/none/res/browsingCapRes6_flows.csv")
+browsing.res.8.noVPN = read.csv("t2/browsing/none/res/browsingCapRes8_flows.csv")
 
-twitch.res.10.1111 = read.csv("t2/streaming/1.1.1.1/res/streamingCapRes10_1111_flows.csv")
-twitch.res.1.1111 = read.csv("t2/streaming/1.1.1.1/res/streamingCapRes1_1111_flows.csv")
-twitch.res.3.1111 = read.csv("t2/streaming/1.1.1.1/res/streamingCapRes3_1111_flows.csv")
-twitch.res.6.1111 = read.csv("t2/streaming/1.1.1.1/res/streamingCapRes6_1111_flows.csv")
-twitch.res.8.1111 = read.csv("t2/streaming/1.1.1.1/res/streamingCapRes8_1111_flows.csv")
+browsing.res.10.1111 = read.csv("t2/browsing/1.1.1.1/res/browsingCapRes10_1111_flows.csv")
+browsing.res.1.1111 = read.csv("t2/browsing/1.1.1.1/res/browsingCapRes1_1111_flows.csv")
+browsing.res.3.1111 = read.csv("t2/browsing/1.1.1.1/res/browsingCapRes3_1111_flows.csv")
+browsing.res.6.1111 = read.csv("t2/browsing/1.1.1.1/res/browsingCapRes6_1111_flows.csv")
+browsing.res.8.1111 = read.csv("t2/browsing/1.1.1.1/res/browsingCapRes8_1111_flows.csv")
 
-twitch.lab.noVPN <- rbind(twitch.lab.10.noVPN,twitch.lab.1.noVPN,twitch.lab.3.noVPN,
-                        twitch.lab.6.noVPN,twitch.lab.8.noVPN)
-twitch.lab.1111 <- rbind(twitch.lab.10.1111,twitch.lab.1.1111,twitch.lab.3.1111,
-                        twitch.lab.6.1111,twitch.lab.8.1111)
-twitch.lab.data <- rbind(twitch.lab.noVPN,twitch.lab.1111)
+browsing.lab.noVPN <- rbind(browsing.lab.10.noVPN,browsing.lab.1.noVPN,browsing.lab.3.noVPN,
+                        browsing.lab.6.noVPN,browsing.lab.8.noVPN)
+browsing.lab.1111 <- rbind(browsing.lab.10.1111,browsing.lab.1.1111,browsing.lab.3.1111,
+                        browsing.lab.6.1111,browsing.lab.8.1111)
+browsing.lab.noVPN
+browsing.lab.1111
 
-twitch.res.noVPN <- rbind(twitch.res.10.noVPN,twitch.res.1.noVPN,twitch.res.3.noVPN,
-                          twitch.res.6.noVPN,twitch.res.8.noVPN)
-twitch.res.1111 <- rbind(twitch.res.10.1111,twitch.res.1.1111,twitch.res.3.1111,
-                         twitch.res.6.1111,twitch.res.8.1111)
+browsing.lab.data <- rbind(browsing.lab.noVPN,browsing.lab.1111)
 
-twitch.data.noVPN <- rbind(twitch.lab.noVPN,twitch.res.noVPN)
-twitch.data.1111 <- rbind(twitch.lab.1111,twitch.res.1111)
-twitch.data <- rbind(twitch.data.1111,twitch.data.noVPN)
+browsing.res.noVPN <- rbind(browsing.res.10.noVPN,browsing.res.1.noVPN,browsing.res.3.noVPN,
+                          browsing.res.6.noVPN,browsing.res.8.noVPN)
+browsing.res.1111 <- rbind(browsing.res.10.1111,browsing.res.1.1111,browsing.res.3.1111,
+                         browsing.res.6.1111,browsing.res.8.1111)
+
+browsing.data.noVPN <- rbind(browsing.lab.noVPN,browsing.res.noVPN)
+browsing.data.1111 <- rbind(browsing.lab.1111,browsing.res.1111)
+browsing.data <- rbind(browsing.data.1111,browsing.data.noVPN)
 
 
 ```
@@ -106,36 +109,36 @@ twitch.data <- rbind(twitch.data.1111,twitch.data.noVPN)
 
 ## Clean data - define cols to drop
 ```{r}
-s <- twitch.data %>% select(where(~ n_distinct(.) <= 1))
+s <- browsing.data %>% select(where(~ n_distinct(.) <= 1))
 drops <- c(drops,colnames(s))
 drops
 
-load_data("twitch.lab.10")
-load_data("twitch.lab.1")
-load_data("twitch.lab.3")
-load_data("twitch.lab.6")
-load_data("twitch.lab.8")
+load_data("browsing.lab.10")
+load_data("browsing.lab.1")
+load_data("browsing.lab.3")
+load_data("browsing.lab.6")
+load_data("browsing.lab.8")
 
-load_data("twitch.res.10")
-load_data("twitch.res.1")
-load_data("twitch.res.3")
-load_data("twitch.res.6")
-load_data("twitch.res.8")
+load_data("browsing.res.10")
+load_data("browsing.res.1")
+load_data("browsing.res.3")
+load_data("browsing.res.6")
+load_data("browsing.res.8")
 
-twitch.lab.noVPN <- rbind(twitch.lab.10.noVPN,twitch.lab.1.noVPN,twitch.lab.3.noVPN,
-                        twitch.lab.6.noVPN,twitch.lab.8.noVPN)
-twitch.lab.1111 <- rbind(twitch.lab.10.1111,twitch.lab.1.1111,twitch.lab.3.1111,
-                        twitch.lab.6.1111,twitch.lab.8.1111)
-twitch.lab.data <- rbind(twitch.lab.noVPN,twitch.lab.1111)
+browsing.lab.noVPN <- rbind(browsing.lab.10.noVPN,browsing.lab.1.noVPN,browsing.lab.3.noVPN,
+                        browsing.lab.6.noVPN,browsing.lab.8.noVPN)
+browsing.lab.1111 <- rbind(browsing.lab.10.1111,browsing.lab.1.1111,browsing.lab.3.1111,
+                        browsing.lab.6.1111,browsing.lab.8.1111)
+browsing.lab.data <- rbind(browsing.lab.noVPN,browsing.lab.1111)
 
-twitch.res.noVPN <- rbind(twitch.res.10.noVPN,twitch.res.1.noVPN,twitch.res.3.noVPN,
-                          twitch.res.6.noVPN,twitch.res.8.noVPN)
-twitch.res.1111 <- rbind(twitch.res.10.1111,twitch.res.1.1111,twitch.res.3.1111,
-                         twitch.res.6.1111,twitch.res.8.1111)
+browsing.res.noVPN <- rbind(browsing.res.10.noVPN,browsing.res.1.noVPN,browsing.res.3.noVPN,
+                          browsing.res.6.noVPN,browsing.res.8.noVPN)
+browsing.res.1111 <- rbind(browsing.res.10.1111,browsing.res.1.1111,browsing.res.3.1111,
+                         browsing.res.6.1111,browsing.res.8.1111)
 
-twitch.data.noVPN <- rbind(twitch.lab.noVPN,twitch.res.noVPN)
-twitch.data.1111 <- rbind(twitch.lab.1111,twitch.res.1111)
-twitch.data <- rbind(twitch.data.1111,twitch.data.noVPN)
+browsing.data.noVPN <- rbind(browsing.lab.noVPN,browsing.res.noVPN)
+browsing.data.1111 <- rbind(browsing.lab.1111,browsing.res.1111)
+browsing.data <- rbind(browsing.data.1111,browsing.data.noVPN)
 
 ```
 ## Process data function
@@ -170,19 +173,19 @@ process_data <- function(data) {
 
 ## Process data for trainning
 ```{r}
-process_data("twitch.lab")
-process_data("twitch.res")
+process_data("browsing.lab")
+process_data("browsing.res")
 
 ```
 
 ## Models - C45
 ```{r}
 train_control<- trainControl(method="cv", number=10)
-twitch.lab.C45Model <- train(isVPN ~., method="J48", data=twitch.lab.dtrain,
+browsing.lab.C45Model <- train(isVPN ~., method="J48", data=browsing.lab.dtrain,
                 tuneLength = 5,
                 trControl = train_control)
 
-twitch.res.C45Model <- train(isVPN ~., method="J48", data=twitch.res.dtrain,
+browsing.res.C45Model <- train(isVPN ~., method="J48", data=browsing.res.dtrain,
                 tuneLength = 5,
                 trControl = train_control)
 
@@ -191,40 +194,40 @@ twitch.res.C45Model <- train(isVPN ~., method="J48", data=twitch.res.dtrain,
 
 ## Validation - C45 - lab
 ```{r}
-twitch.lab.C45Model$finalModel
+browsing.lab.C45Model$finalModel
 
 print("lab")
-predictions.lab.lab = predict(twitch.lab.C45Model, newdata = twitch.lab.dtest)
-confMatrixes.lab.lab <- confusionMatrix(predictions.lab.lab, twitch.lab.dtest$isVPN)
-eva.twitch.c45.lab.lab <- confMatrixes.lab.lab$byClass
-eva.twitch.c45.lab.lab
+predictions.lab.lab = predict(browsing.lab.C45Model, newdata = browsing.lab.dtest)
+confMatrixes.lab.lab <- confusionMatrix(predictions.lab.lab, browsing.lab.dtest$isVPN)
+eva.browsing.c45.lab.lab <- confMatrixes.lab.lab$byClass
+eva.browsing.c45.lab.lab
 confMatrixes.lab.lab$overall
 
 print("res")
-predictions.lab.res = predict(twitch.lab.C45Model, newdata = twitch.res.data)
-confMatrixes.lab.res <- confusionMatrix(predictions.lab.res, twitch.res.data$isVPN)
-eva.twitch.c45.lab.res <- confMatrixes.lab.res$byClass
-eva.twitch.c45.lab.res
+predictions.lab.res = predict(browsing.lab.C45Model, newdata = browsing.res.data)
+confMatrixes.lab.res <- confusionMatrix(predictions.lab.res, browsing.res.data$isVPN)
+eva.browsing.c45.lab.res <- confMatrixes.lab.res$byClass
+eva.browsing.c45.lab.res
 confMatrixes.lab.res$overall
 ```
 
 
 ## Validation - C45 - res
 ```{r}
-twitch.res.C45Model$finalModel
+browsing.res.C45Model$finalModel
 
 print("res")
-predictions.res.res = predict(twitch.res.C45Model, newdata = twitch.res.dtest)
-confMatrixes.res.res <- confusionMatrix(predictions.res.res, twitch.res.dtest$isVPN)
-eva.twitch.c45.res.res <- confMatrixes.res.res$byClass
-eva.twitch.c45.res.res
+predictions.res.res = predict(browsing.res.C45Model, newdata = browsing.res.dtest)
+confMatrixes.res.res <- confusionMatrix(predictions.res.res, browsing.res.dtest$isVPN)
+eva.browsing.c45.res.res <- confMatrixes.res.res$byClass
+eva.browsing.c45.res.res
 confMatrixes.res.res$overall
 
 print("lab")
-predictions.res.lab = predict(twitch.res.C45Model, newdata = twitch.lab.data)
-confMatrixes.res.lab <- confusionMatrix(predictions.res.lab, twitch.lab.data$isVPN)
-eva.twitch.c45.res.lab <- confMatrixes.res.lab$byClass
-eva.twitch.c45.res.lab
+predictions.res.lab = predict(browsing.res.C45Model, newdata = browsing.lab.data)
+confMatrixes.res.lab <- confusionMatrix(predictions.res.lab, browsing.lab.data$isVPN)
+eva.browsing.c45.res.lab <- confMatrixes.res.lab$byClass
+eva.browsing.c45.res.lab
 confMatrixes.res.lab$overall
 
 ```
@@ -236,23 +239,23 @@ confMatrixes.res.lab$overall
 set.seed(1003)  # Setting seed
 repeat_cv <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
 
-twitch.lab.classifier_RF = randomForest(x = twitch.lab.dtrain[-81],
-                             y = twitch.lab.dtrain$isVPN,
+browsing.lab.classifier_RF = randomForest(x = browsing.lab.dtrain[-81],
+                             y = browsing.lab.dtrain$isVPN,
                              ntree = 500,
                              trControl = repeat_cv)
 
-twitch.res.classifier_RF = randomForest(x = twitch.res.dtrain[-81],
-                             y = twitch.res.dtrain$isVPN,
+browsing.res.classifier_RF = randomForest(x = browsing.res.dtrain[-81],
+                             y = browsing.res.dtrain$isVPN,
                              ntree = 500,
                              trControl = repeat_cv)
 
 # Importance plot
-importance(twitch.lab.classifier_RF)
-importance(twitch.res.classifier_RF)
+importance(browsing.lab.classifier_RF)
+importance(browsing.res.classifier_RF)
   
 # Variable importance plot
-varImpPlot(twitch.lab.classifier_RF)
-varImpPlot(twitch.res.classifier_RF)
+varImpPlot(browsing.lab.classifier_RF)
+varImpPlot(browsing.res.classifier_RF)
 
 ```
 
@@ -261,17 +264,17 @@ varImpPlot(twitch.res.classifier_RF)
 ```{r}
 
 print("lab")
-predictions.lab.lab.rf = predict(twitch.lab.classifier_RF, newdata = twitch.lab.dtest)
-confMatrixes.lab.lab.rf <- confusionMatrix(predictions.lab.lab.rf, twitch.lab.dtest$isVPN)
-eva.twitch.c45.lab.lab.rf <- confMatrixes.lab.lab.rf$byClass
-eva.twitch.c45.lab.lab.rf
+predictions.lab.lab.rf = predict(browsing.lab.classifier_RF, newdata = browsing.lab.dtest)
+confMatrixes.lab.lab.rf <- confusionMatrix(predictions.lab.lab.rf, browsing.lab.dtest$isVPN)
+eva.browsing.c45.lab.lab.rf <- confMatrixes.lab.lab.rf$byClass
+eva.browsing.c45.lab.lab.rf
 confMatrixes.lab.lab.rf$overall
 
 print("res")
-predictions.lab.res.rf = predict(twitch.lab.classifier_RF, newdata = twitch.res.data)
-confMatrixes.lab.res.rf <- confusionMatrix(predictions.lab.res.rf, twitch.res.data$isVPN)
-eva.twitch.c45.lab.res.rf <- confMatrixes.lab.res.rf$byClass
-eva.twitch.c45.lab.res.rf
+predictions.lab.res.rf = predict(browsing.lab.classifier_RF, newdata = browsing.res.data)
+confMatrixes.lab.res.rf <- confusionMatrix(predictions.lab.res.rf, browsing.res.data$isVPN)
+eva.browsing.c45.lab.res.rf <- confMatrixes.lab.res.rf$byClass
+eva.browsing.c45.lab.res.rf
 confMatrixes.lab.res.rf$overall
 
 ```
@@ -280,32 +283,32 @@ confMatrixes.lab.res.rf$overall
 ## Validation - Random Forest - res
 ```{r}
 print("res")
-predictions.res.res.rf = predict(twitch.res.classifier_RF, newdata = twitch.res.dtest)
-confMatrixes.res.res.rf <- confusionMatrix(predictions.res.res.rf, twitch.res.dtest$isVPN)
-eva.twitch.c45.res.res.rf <- confMatrixes.res.res.rf$byClass
-eva.twitch.c45.res.res.rf
+predictions.res.res.rf = predict(browsing.res.classifier_RF, newdata = browsing.res.dtest)
+confMatrixes.res.res.rf <- confusionMatrix(predictions.res.res.rf, browsing.res.dtest$isVPN)
+eva.browsing.c45.res.res.rf <- confMatrixes.res.res.rf$byClass
+eva.browsing.c45.res.res.rf
 confMatrixes.res.res.rf$overall
 
 print("lab")
-predictions.res.lab.rf = predict(twitch.res.classifier_RF, newdata = twitch.lab.data)
-confMatrixes.res.lab.rf <- confusionMatrix(predictions.res.lab.rf, twitch.lab.data$isVPN)
-eva.twitch.c45.res.lab.rf <- confMatrixes.res.lab.rf$byClass
-eva.twitch.c45.res.lab.rf
+predictions.res.lab.rf = predict(browsing.res.classifier_RF, newdata = browsing.lab.data)
+confMatrixes.res.lab.rf <- confusionMatrix(predictions.res.lab.rf, browsing.lab.data$isVPN)
+eva.browsing.c45.res.lab.rf <- confMatrixes.res.lab.rf$byClass
+eva.browsing.c45.res.lab.rf
 confMatrixes.res.lab.rf$overall
 ```
 ## Drop no-numeric columns
 ```{r}
 library(glmnet)
 library(tidyverse)
-twitch.lab.dtrain <- twitch.lab.dtrain[, !(names(twitch.lab.dtrain) %in% c("X.dir", "ipOptCpCl_Num"))]
-twitch.res.dtrain <- twitch.res.dtrain[, !(names(twitch.res.dtrain) %in% c("X.dir", "ipOptCpCl_Num"))]
-twitch.lab.dtrain
-twitch.res.dtrain
+browsing.lab.dtrain <- browsing.lab.dtrain[, !(names(browsing.lab.dtrain) %in% c("X.dir", "ipOptCpCl_Num"))]
+browsing.res.dtrain <- browsing.res.dtrain[, !(names(browsing.res.dtrain) %in% c("X.dir", "ipOptCpCl_Num"))]
+browsing.lab.dtrain
+browsing.res.dtrain
 
-twitch.lab.dtest <- twitch.lab.dtest[, !(names(twitch.lab.dtest) %in% c("X.dir", "ipOptCpCl_Num"))]
-twitch.res.dtest <- twitch.res.dtest[, !(names(twitch.res.dtest) %in% c("X.dir", "ipOptCpCl_Num"))]
-twitch.lab.dtest
-twitch.res.dtest
+browsing.lab.dtest <- browsing.lab.dtest[, !(names(browsing.lab.dtest) %in% c("X.dir", "ipOptCpCl_Num"))]
+browsing.res.dtest <- browsing.res.dtest[, !(names(browsing.res.dtest) %in% c("X.dir", "ipOptCpCl_Num"))]
+browsing.lab.dtest
+browsing.res.dtest
 
 ```
 
@@ -313,9 +316,9 @@ twitch.res.dtest
 ```{r}
 #perform k-fold cross-validation to find optimal lambda value
 lambdas_to_try <- 10^seq(-3, 5, length.out = 100)
-x.lab = as.matrix(twitch.lab.dtrain[-80])
+x.lab = as.matrix(browsing.lab.dtrain[-80])
 
-cv_model.lab <- cv.glmnet(x.lab, twitch.lab.dtrain$isVPN, alpha = 1,
+cv_model.lab <- cv.glmnet(x.lab, browsing.lab.dtrain$isVPN, alpha = 1,
                       lambda = lambdas_to_try,
                       standardize = TRUE,
                       nfolds = 10,
@@ -328,7 +331,7 @@ best_lambda.lab
 #produce plot of test MSE by lambda value
 plot(cv_model.lab) 
 
-cv_best_model.lab <- glmnet(x.lab, twitch.lab.dtrain$isVPN, alpha = 1,
+cv_best_model.lab <- glmnet(x.lab, browsing.lab.dtrain$isVPN, alpha = 1,
                       lambda = best_lambda.lab,
                       standardize = TRUE,
                       family = "binomial")
@@ -339,9 +342,9 @@ cv_best_model.lab <- glmnet(x.lab, twitch.lab.dtrain$isVPN, alpha = 1,
 ```{r}
 #perform k-fold cross-validation to find optimal lambda value
 lambdas_to_try <- 10^seq(-3, 5, length.out = 100)
-x.res = as.matrix(twitch.res.dtrain[-80])
+x.res = as.matrix(browsing.res.dtrain[-80])
 
-cv_model.res <- cv.glmnet(x.res, twitch.res.dtrain$isVPN, alpha = 1,
+cv_model.res <- cv.glmnet(x.res, browsing.res.dtrain$isVPN, alpha = 1,
                       lambda = lambdas_to_try,
                       standardize = TRUE,
                       nfolds = 10,
@@ -354,7 +357,7 @@ best_lambda.res
 #produce plot of test MSE by lambda value
 plot(cv_model.res) 
 
-cv_best_model.res <- glmnet(x.res, twitch.res.dtrain$isVPN, alpha = 1,
+cv_best_model.res <- glmnet(x.res, browsing.res.dtrain$isVPN, alpha = 1,
                       lambda = best_lambda.lab,
                       standardize = TRUE,
                       family = "binomial")
@@ -364,9 +367,9 @@ cv_best_model.res <- glmnet(x.res, twitch.res.dtrain$isVPN, alpha = 1,
 
 ## Validation - LASSO - Lab
 ```{r}
-dtest.lab <- as.matrix(twitch.lab.dtest[-80])
+dtest.lab <- as.matrix(browsing.lab.dtest[-80])
 ncol(dtest.lab)
-dtest.res <- as.matrix(twitch.res.dtest[-80])
+dtest.res <- as.matrix(browsing.res.dtest[-80])
 threshold <- 0.5
 
 
@@ -375,8 +378,8 @@ predictions.lab.res.lasso <- predict(cv_best_model.lab, s = best_lambda.res, dte
 predicted_classes.lab.lab <- ifelse(predictions.lab.lab.lasso > threshold,1,0)
 predicted_classes.lab.res <- ifelse(predictions.lab.res.lasso > threshold,1,0)
 
-confmtx.lab.lab.lasso <- confusionMatrix(table(predicted_classes.lab.lab,twitch.lab.dtest$isVPN))
-confmtx.lab.res.lasso <- confusionMatrix(table(predicted_classes.lab.res,twitch.res.dtest$isVPN))
+confmtx.lab.lab.lasso <- confusionMatrix(table(predicted_classes.lab.lab,browsing.lab.dtest$isVPN))
+confmtx.lab.res.lasso <- confusionMatrix(table(predicted_classes.lab.res,browsing.res.dtest$isVPN))
 
 print("lab")
 confmtx.lab.lab.lasso$byClass
@@ -396,8 +399,8 @@ predictions.res.res.lasso <- predict(cv_best_model.res, s = best_lambda.res, dte
 predicted_classes.res.lab <- ifelse(predictions.res.lab.lasso > threshold,1,0)
 predicted_classes.res.res <- ifelse(predictions.res.res.lasso > threshold,1,0)
 
-confmtx.res.lab.lasso <- confusionMatrix(table(predicted_classes.res.lab,twitch.lab.dtest$isVPN))
-confmtx.res.res.lasso <- confusionMatrix(table(predicted_classes.res.res,twitch.res.dtest$isVPN))
+confmtx.res.lab.lasso <- confusionMatrix(table(predicted_classes.res.lab,browsing.lab.dtest$isVPN))
+confmtx.res.res.lasso <- confusionMatrix(table(predicted_classes.res.res,browsing.res.dtest$isVPN))
 
 print("lab")
 confmtx.res.lab.lasso$byClass
