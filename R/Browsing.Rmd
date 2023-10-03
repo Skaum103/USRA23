@@ -176,6 +176,7 @@ process_data <- function(data) {
 process_data("browsing.lab")
 process_data("browsing.res")
 
+browsing.lab.dtrain
 ```
 
 ## Models - C45
@@ -316,7 +317,7 @@ browsing.res.dtest
 ```{r}
 #perform k-fold cross-validation to find optimal lambda value
 lambdas_to_try <- 10^seq(-3, 5, length.out = 100)
-x.lab = as.matrix(browsing.lab.dtrain[-80])
+x.lab = as.matrix(browsing.lab.dtrain[-81])
 
 cv_model.lab <- cv.glmnet(x.lab, browsing.lab.dtrain$isVPN, alpha = 1,
                       lambda = lambdas_to_try,
@@ -342,7 +343,7 @@ cv_best_model.lab <- glmnet(x.lab, browsing.lab.dtrain$isVPN, alpha = 1,
 ```{r}
 #perform k-fold cross-validation to find optimal lambda value
 lambdas_to_try <- 10^seq(-3, 5, length.out = 100)
-x.res = as.matrix(browsing.res.dtrain[-80])
+x.res = as.matrix(browsing.res.dtrain[-81])
 
 cv_model.res <- cv.glmnet(x.res, browsing.res.dtrain$isVPN, alpha = 1,
                       lambda = lambdas_to_try,
