@@ -293,6 +293,16 @@ eva.twitch.c45.res.lab.rf <- confMatrixes.res.lab.rf$byClass
 eva.twitch.c45.res.lab.rf
 confMatrixes.res.lab.rf$overall
 ```
+## Drop no-numeric columns
+```{r}
+library(glmnet)
+library(tidyverse)
+twitch.lab.data <- twitch.lab.data[, !(names(twitch.lab.data) %in% c("X.dir", "ipOptCpCl_Num"))]
+twitch.res.data <- twitch.res.data[, !(names(twitch.res.data) %in% c("X.dir", "ipOptCpCl_Num"))]
+ncol(twitch.lab.data)
+ncol(twitch.res.data)
+
+```
 
 ## Models - LASSO
 ```{r}
