@@ -177,6 +177,7 @@ process_data("browsing.lab")
 process_data("browsing.res")
 
 browsing.lab.dtrain
+browsing.res.dtrain
 ```
 
 ## Models - C45
@@ -368,9 +369,9 @@ cv_best_model.res <- glmnet(x.res, browsing.res.dtrain$isVPN, alpha = 1,
 
 ## Validation - LASSO - Lab
 ```{r}
-dtest.lab <- as.matrix(browsing.lab.dtest[-80])
+dtest.lab <- as.matrix(browsing.lab.dtest[-81])
 ncol(dtest.lab)
-dtest.res <- as.matrix(browsing.res.dtest[-80])
+dtest.res <- as.matrix(browsing.res.dtest[-81])
 threshold <- 0.5
 
 
