@@ -302,6 +302,11 @@ twitch.res.dtrain <- twitch.res.dtrain[, !(names(twitch.res.dtrain) %in% c("X.di
 twitch.lab.dtrain
 twitch.res.dtrain
 
+twitch.lab.dtest <- twitch.lab.dtest[, !(names(twitch.lab.dtest) %in% c("X.dir", "ipOptCpCl_Num"))]
+twitch.res.dtest <- twitch.res.dtest[, !(names(twitch.res.dtest) %in% c("X.dir", "ipOptCpCl_Num"))]
+twitch.lab.dtest
+twitch.res.dtest
+
 ```
 
 ## Models - LASSO - Lab
@@ -357,7 +362,49 @@ cv_best_model.res <- glmnet(x.res, twitch.res.dtrain$isVPN, alpha = 1,
 
 ```
 
-## Validation - LASSO
+## Validation - LASSO - Lab
 ```{r}
+dtest.lab <- as.matrix(twitch.lab.dtest[-80])
+ncol(dtest.lab)
+dtest.res <- as.matrix(twitch.res.dtest[-80])
+threshold <- 0.5
+
+
+predictions.lab.lab.lasso <- predict(cv_best_model.lab, s = best_lambda.lab, dtest.lab, type = "response")
+predictions.lab.res.lasso <- predict(cv_best_model.lab, s = best_lambda.res, dtest.res, type = "response")
+predicted_classes.lab.lab <- ifelse(predictions.lab.lab.lasso > threshold,1,0)
+predicted_classes.lab.res <- ifelse(predictions.lab.res.lasso > threshold,1,0)
+
+confmtx.lab.lab.lasso <- confusionMatrix(table(predicted_classes.lab.lab,twitch.lab.dtest$isVPN))
+confmtx.lab.res.lasso <- confusionMatrix(table(predicted_classes.lab.res,twitch.res.dtest$isVPN))
+
+print("lab")
+confmtx.lab.lab.lasso$byClass
+confmtx.lab.lab.lasso$overall
+
+print("res")
+confmtx.lab.res.lasso$byClass
+confmtx.lab.res.lasso$overall
+
+```
+
+
+## Validation - LASSO - Res
+```{r}
+predictions.res.lab.lasso <- predict(cv_best_model.res, s = best_lambda.lab, dtest.lab, type = "response")
+predictions.res.res.lasso <- predict(cv_best_model.res, s = best_lambda.res, dtest.res, type = "response")
+predicted_classes.res.lab <- ifelse(predictions.res.lab.lasso > threshold,1,0)
+predicted_classes.res.res <- ifelse(predictions.res.res.lasso > threshold,1,0)
+
+confmtx.res.lab.lasso <- confusionMatrix(table(predicted_classes.res.lab,twitch.lab.dtest$isVPN))
+confmtx.res.res.lasso <- confusionMatrix(table(predicted_classes.res.res,twitch.res.dtest$isVPN))
+
+print("lab")
+confmtx.res.lab.lasso$byClass
+confmtx.res.lab.lasso$overall
+
+print("res")
+confmtx.res.res.lasso$byClass
+confmtx.res.res.lasso$overall
 
 ```
