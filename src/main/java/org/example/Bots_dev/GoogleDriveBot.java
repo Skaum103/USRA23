@@ -34,14 +34,10 @@ public class GoogleDriveBot {
         System.out.println("Please enter the gdrive folder ID");
         String folderID = in.next();
 
-        Thread tsharkS = new Thread(new Tshark("scap.pcapng"));
-        tsharkS.start();
-        startBot(runTime,nSFiles,"sFiles/sFile#",folderID);
-        Thread tsharkM = new Thread(new Tshark("mcap.pcapng"));
-        tsharkM.start();
+        Thread tshark = new Thread(new Tshark("cap.pcapng"));
+        tshark.start();
+        startBot(runTime/3,nSFiles,"sFiles/sFile#",folderID);
         startBot(runTime/3,nMFiles,"mFiles/mFile#",folderID);
-        Thread tsharkL = new Thread(new Tshark("lcap.pcapng"));
-        tsharkL.start();
         startBot(runTime/3,nLFiles,"lFiles/lFile#",folderID);
 
 
@@ -57,9 +53,6 @@ public class GoogleDriveBot {
 
         fwReport.close();
 
-        GdriveLogParser.parsePcap("spcap.pcapng");
-        GdriveLogParser.parsePcap("mpcap.pcapng");
-        GdriveLogParser.parsePcap("lpcap.pcapng");
     }
 
 
