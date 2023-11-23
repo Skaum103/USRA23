@@ -566,8 +566,8 @@ library(glmnet)
 library(tidyverse)
 slack.lab.data <- slack.lab.data[, !(names(slack.lab.1.1111) %in% c("X.dir", "ipOptCpCl_Num"))]
 slack.res.data <- slack.res.data[, !(names(slack.lab.1.1111) %in% c("X.dir", "ipOptCpCl_Num"))]
-ncol(slack.lab.data)
-ncol(slack.res.data)
+ncol(slack.lab.dtrain)
+ncol(slack.res.dtrain)
 ```
 
 
@@ -596,7 +596,20 @@ cv_best_model <- glmnet(x, slack.lab.data$isVPN, alpha = 1,
                       standardize = TRUE,
                       family = "binomial")
 
+x_res = as.matrix(slack.res.data[-79])
+cv_model.res <- cv.glmnet(x_res, slack.res.data$isVPN, alpha = 1,
+                      lambda = lambdas_to_try,
+                      standardize = TRUE,
+                      nfolds = 10,
+                      family = "binomial")
 
+best_lambda.res <- cv_model.res$lambda.min
+best_lambda.res
+
+cv_best_model.res <- glmnet(x_res, slack.res.data$isVPN, alpha = 1,
+                      lambda = best_lambda.res,
+                      standardize = TRUE,
+                      family = "binomial")
 
 
 ```
@@ -604,8 +617,8 @@ cv_best_model <- glmnet(x, slack.lab.data$isVPN, alpha = 1,
 ## Validation
 ```{r}
 x.res <- as.matrix(slack.res.data[-79])
-predictions.slack.lab.lab <- predict(cv_best_model, s = best_lambda, x, type = "response")
-predictions.slack.lab.res <- predict(cv_best_model, s = best_lambda, x.res, type = "response")
+predictions.slack.lab.lab <- predict(cv_best_model, s = best_lambda.res, x, type = "response")
+predictions.slack.lab.res <- predict(cv_best_model, s = best_lambda.res, x.res, type = "response")
 threshold <- 0.5
 predicted_classes <- ifelse(predictions.slack.lab.lab > threshold,1,0)
 confmtx.lab <- confusionMatrix(table(predicted_classes,slack.lab.data$isVPN))
@@ -618,6 +631,182 @@ confmtx.res <- confusionMatrix(table(predicted_classes.res,slack.res.data$isVPN)
 confmtx.res$byClass
 confmtx.res$overall
 
-#confusion.glmnet(predictions.slack.lab.lab,newx=x,newy=slack.lab.data$isVPN)
-#confusion.glmnet(predictions.slack.lab.res,newx=x.res,newy=slack.res.data$isVPN)
+```
+
+## Validation
+```{r}
+x.res <- as.matrix(slack.res.data[-79])
+predictions.slack.res.lab <- predict(cv_best_model.res, s = best_lambda, x, type = "response")
+predictions.slack.res.res <- predict(cv_best_model.res, s = best_lambda, x.res, type = "response")
+threshold <- 0.5
+predicted_classes.res.lab <- ifelse(predictions.slack.res.lab > threshold,1,0)
+confmtx.res.lab <- confusionMatrix(table(predicted_classes.res.lab,slack.lab.data$isVPN))
+confmtx.res.lab$byClass
+confmtx.res.lab$overall
+
+
+predicted_classes.res.res <- ifelse(predictions.slack.res.res > threshold,1,0)
+confmtx.res.res <- confusionMatrix(table(predicted_classes.res.res,slack.res.data$isVPN))
+confmtx.res.res$byClass
+confmtx.res.res$overall
+
+```
+
+
+
+## export
+```{r}
+slack.lab.dtrain <- slack.lab.dtrain[, !(names(slack.lab.dtrain) %in% c("X.dir", "ipOptCpCl_Num", "ipOptCnt"))]
+slack.res.dtrain <- slack.res.dtrain[, !(names(slack.res.dtrain) %in% c("X.dir", "ipOptCpCl_Num"))]
+slack.lab.dtrain
+slack.res.dtrain
+
+slack.lab.dtest <- slack.lab.dtest[, !(names(slack.lab.dtest) %in% c("X.dir", "ipOptCpCl_Num", "ipOptCnt"))]
+slack.res.dtest <- slack.res.dtest[, !(names(slack.res.dtest) %in% c("X.dir", "ipOptCpCl_Num"))]
+
+write.csv(slack.lab.dtrain, "t2/slack/dtrain_lab.csv",row.names=FALSE)
+write.csv(slack.res.dtrain, "t2/slack/dtrain_res.csv",row.names=FALSE)
+
+write.csv(slack.lab.dtest, "t2/slack/dtest_lab.csv",row.names=FALSE)
+write.csv(slack.res.dtest, "t2/slack/dtest_res.csv",row.names=FALSE)
+
+slack.lab.data <- slack.lab.data[, !(names(slack.lab.data) %in% c("X.dir", "ipOptCpCl_Num","ipOptCnt"))]
+slack.res.data <- slack.res.data[, !(names(slack.res.data) %in% c("X.dir", "ipOptCpCl_Num","ipOptCnt"))]
+
+slack.lab.data
+
+
+write.csv(slack.lab.data, "t2/slack/data_lab.csv",row.names=FALSE)
+write.csv(slack.res.data, "t2/slack/data_res.csv",row.names=FALSE)
+
+```
+
+
+```{r}
+slack.lab.1111 <- slack.lab.1111[, !(names(slack.lab.1111) %in% c("X.dir", "ipOptCpCl_Num"))]
+slack.res.1111 <- slack.res.1111[, !(names(slack.res.1111) %in% c("X.dir", "ipOptCpCl_Num"))]
+slack.lab.1111
+
+slack.lab.1111 <- slack.lab.1111[-80]
+slack.lab.1111$isLab <- 1
+slack.lab.1111$isLab <- as.factor(slack.lab.1111$isLab)
+slack.res.1111 <-slack.res.1111[-80]
+slack.res.1111$isLab <- 0
+slack.res.1111$isLab <- as.factor(slack.res.1111$isLab)
+
+slack.lab.1111.trnRows  <- sample(nrow(slack.lab.1111),nrow(slack.lab.1111)*0.7)
+slack.lab.1111.dtrain <- slack.lab.1111[slack.lab.1111.trnRows,]
+slack.lab.1111.dtest  <- slack.lab.1111[-slack.lab.1111.trnRows,]
+
+slack.res.1111.trnRows  <- sample(nrow(slack.res.1111),nrow(slack.res.1111)*0.7)
+slack.res.1111.dtrain <- slack.res.1111[slack.res.1111.trnRows,]
+slack.res.1111.dtest  <- slack.res.1111[-slack.res.1111.trnRows,]
+
+slack.1111.dtrain <- rbind(slack.lab.1111.dtrain,slack.res.1111.dtrain)
+slack.1111.dtest <- rbind(slack.lab.1111.dtest,slack.res.1111.dtest)
+ncol(slack.1111.dtrain)
+```
+
+## C45
+```{r}
+train_control<- trainControl(method="cv", number=10)
+slack.lab.C45Model.locat <- train(isLab ~., method="J48", data=slack.1111.dtrain,
+                tuneLength = 5,
+                trControl = train_control)
+```
+
+```{r}
+slack.lab.C45Model.locat$finalModel
+
+predictions.c45.locat = predict(slack.lab.C45Model.locat, newdata = slack.1111.dtest)
+confMatrixes.c45.locat <- confusionMatrix(predictions.c45.locat, slack.1111.dtest$isLab)
+eva.slack.c45.locat <- confMatrixes.c45.locat$byClass
+
+eva.slack.c45.locat
+confMatrixes.c45.locat$overall
+```
+
+
+## RF
+```{r}
+# Fitting Random Forest to the train dataset
+set.seed(1003)  # Setting seed
+slack.1111.dtrain
+repeat_cv <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+
+slack.locat.classifier_RF = randomForest(x = slack.1111.dtrain[-79],
+                               y = slack.1111.dtrain$isLab,
+                               ntree = 500,
+                               trControl = repeat_cv)
+
+# Importance plot
+importance(slack.locat.classifier_RF)
+  
+# Variable importance plot
+varImpPlot(slack.locat.classifier_RF)
+
+```
+
+
+
+```{r}
+predictions.rf.locat = predict(slack.locat.classifier_RF, newdata = slack.1111.dtest)
+confMatrixes.rf.locat <- confusionMatrix(predictions.rf.locat, slack.1111.dtest$isLab)
+eva.slack.rf.locat <- confMatrixes.rf.locat$byClass
+
+eva.slack.rf.locat
+confMatrixes.rf.locat$overall
+
+```
+
+
+# LASSO
+```{r}
+#perform k-fold cross-validation to find optimal lambda value
+lambdas_to_try <- 10^seq(-3, 5, length.out = 100)
+x = as.matrix(slack.1111.dtrain[-79])
+
+
+cv_model <- cv.glmnet(x, slack.1111.dtrain$isLab, alpha = 1,
+                      lambda = lambdas_to_try,
+                      standardize = TRUE,
+                      nfolds = 10,
+                      family = "binomial")
+
+#find optimal lambda value that minimizes test MSE
+best_lambda <- cv_model$lambda.min
+best_lambda
+
+#produce plot of test MSE by lambda value
+plot(cv_model) 
+
+cv_best_model <- glmnet(x, slack.1111.dtrain$isLab, alpha = 1,
+                      lambda = best_lambda,
+                      standardize = TRUE,
+                      family = "binomial")
+
+
+```
+
+
+```{r}
+dtest <- as.matrix(slack.1111.dtest[-79])
+threshold <- 0.5
+
+predictions.locat.lasso <- predict(cv_best_model, s = best_lambda, dtest, type = "response")
+predicted_classes.locat.lasso <- ifelse(predictions.locat.lasso > threshold,0,1)
+
+confmtx.locat.lasso <- confusionMatrix(table(predicted_classes.locat.lasso,as.matrix(slack.1111.dtest$isLab)))
+
+confmtx.locat.lasso$byClass
+confmtx.locat.lasso$overall
+
+```
+
+
+```{r}
+write.csv(slack.1111.dtrain, "t2/slack/locat_train.csv",row.names=FALSE)
+write.csv(slack.1111.dtest, "t2/slack/locat_test.csv",row.names=FALSE)
+slack.1111.dtrain
+slack.1111.dtest
 ```

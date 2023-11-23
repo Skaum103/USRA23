@@ -413,3 +413,151 @@ confmtx.res.res.lasso$byClass
 confmtx.res.res.lasso$overall
 
 ```
+
+## export
+```{r} 
+write.csv(browsing.lab.dtrain, "t2/browsing/dtrain_lab.csv",row.names=FALSE)
+write.csv(browsing.res.dtrain, "t2/browsing/dtrain_res.csv",row.names=FALSE)
+
+write.csv(browsing.lab.dtest, "t2/browsing/dtest_lab.csv",row.names=FALSE)
+write.csv(browsing.res.dtest, "t2/browsing/dtest_res.csv",row.names=FALSE)
+
+browsing.lab.data <- browsing.lab.data[, !(names(browsing.lab.data) %in% c("X.dir", "ipOptCpCl_Num"))]
+browsing.res.data <- browsing.res.data[, !(names(browsing.res.data) %in% c("X.dir", "ipOptCpCl_Num"))]
+
+write.csv(browsing.lab.data, "t2/browsing/data_lab.csv",row.names=FALSE)
+write.csv(browsing.res.data, "t2/browsing/data_res.csv",row.names=FALSE)
+
+```
+
+
+```{r}
+browsing.lab.1111 <- browsing.lab.1111[, !(names(browsing.lab.1111) %in% c("X.dir", "ipOptCpCl_Num"))]
+browsing.res.1111 <- browsing.res.1111[, !(names(browsing.res.1111) %in% c("X.dir", "ipOptCpCl_Num"))]
+
+browsing.lab.1111 <- browsing.lab.1111[-81]
+browsing.lab.1111$isLab <- 1
+browsing.lab.1111$isLab <- as.factor(browsing.lab.1111$isLab)
+browsing.res.1111 <-browsing.res.1111[-81]
+browsing.res.1111$isLab <- 0
+browsing.res.1111$isLab <- as.factor(browsing.res.1111$isLab)
+
+write.csv(browsing.lab.1111, "t2/browsing/dtrain_lab_1111.csv",row.names=FALSE)
+write.csv(browsing.res.1111, "t2/browsing/dtrain_res_1111.csv",row.names=FALSE)
+
+browsing.lab.1111.trnRows  <- sample(nrow(browsing.lab.1111),nrow(browsing.lab.1111)*0.7)
+browsing.lab.1111.dtrain <- browsing.lab.1111[browsing.lab.1111.trnRows,]
+browsing.lab.1111.dtest  <- browsing.lab.1111[-browsing.lab.1111.trnRows,]
+
+browsing.res.1111.trnRows  <- sample(nrow(browsing.res.1111),nrow(browsing.res.1111)*0.7)
+browsing.res.1111.dtrain <- browsing.res.1111[browsing.res.1111.trnRows,]
+browsing.res.1111.dtest  <- browsing.res.1111[-browsing.res.1111.trnRows,]
+
+browsing.1111.dtrain <- rbind(browsing.lab.1111.dtrain,browsing.res.1111.dtrain)
+browsing.1111.dtest <- rbind(browsing.lab.1111.dtest,browsing.res.1111.dtest)
+ncol(browsing.1111.dtrain)
+```
+
+
+
+## C45
+```{r}
+train_control<- trainControl(method="cv", number=10)
+browsing.lab.C45Model.locat <- train(isLab ~., method="J48", data=browsing.1111.dtrain,
+                tuneLength = 5,
+                trControl = train_control)
+```
+
+```{r}
+browsing.lab.C45Model.locat$finalModel
+
+predictions.c45.locat = predict(browsing.lab.C45Model.locat, newdata = browsing.1111.dtest)
+confMatrixes.c45.locat <- confusionMatrix(predictions.c45.locat, browsing.1111.dtest$isLab)
+eva.gdrive.c45.locat <- confMatrixes.c45.locat$byClass
+
+eva.gdrive.c45.locat
+confMatrixes.c45.locat$overall
+```
+
+
+## RF
+```{r}
+# Fitting Random Forest to the train dataset
+set.seed(1003)  # Setting seed
+browsing.1111.dtrain
+repeat_cv <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+
+browsing.locat.classifier_RF = randomForest(x = browsing.1111.dtrain[-81],
+                               y = browsing.1111.dtrain$isLab,
+                               ntree = 500,
+                               trControl = repeat_cv)
+
+# Importance plot
+importance(browsing.locat.classifier_RF)
+  
+# Variable importance plot
+varImpPlot(browsing.locat.classifier_RF)
+
+```
+
+
+
+```{r}
+predictions.rf.locat = predict(browsing.locat.classifier_RF, newdata = browsing.1111.dtest)
+confMatrixes.rf.locat <- confusionMatrix(predictions.rf.locat, browsing.1111.dtest$isLab)
+eva.gdrive.rf.locat <- confMatrixes.rf.locat$byClass
+
+eva.gdrive.rf.locat
+confMatrixes.rf.locat$overall
+
+```
+
+# LASSO
+```{r}
+#perform k-fold cross-validation to find optimal lambda value
+lambdas_to_try <- 10^seq(-3, 5, length.out = 100)
+x = as.matrix(browsing.1111.dtrain[-81])
+
+
+cv_model <- cv.glmnet(x, browsing.1111.dtrain$isLab, alpha = 1,
+                      lambda = lambdas_to_try,
+                      standardize = TRUE,
+                      nfolds = 10,
+                      family = "binomial")
+
+#find optimal lambda value that minimizes test MSE
+best_lambda <- cv_model$lambda.min
+best_lambda
+
+#produce plot of test MSE by lambda value
+plot(cv_model) 
+
+cv_best_model <- glmnet(x, browsing.1111.dtrain$isLab, alpha = 1,
+                      lambda = best_lambda,
+                      standardize = TRUE,
+                      family = "binomial")
+
+
+```
+
+
+```{r}
+dtest <- as.matrix(browsing.1111.dtest[-81])
+threshold <- 0.5
+
+predictions.locat.lasso <- predict(cv_best_model, s = best_lambda, dtest, type = "response")
+predicted_classes.locat.lasso <- ifelse(predictions.locat.lasso > threshold,0,1)
+
+confmtx.locat.lasso <- confusionMatrix(table(predicted_classes.locat.lasso,as.matrix(browsing.1111.dtest$isLab)))
+
+confmtx.locat.lasso$byClass
+confmtx.locat.lasso$overall
+
+```
+
+
+```{r}
+write.csv(browsing.1111.dtrain, "t2/browsing/locat_train.csv",row.names=FALSE)
+write.csv(browsing.1111.dtest, "t2/browsing/locat_test.csv",row.names=FALSE)
+
+```

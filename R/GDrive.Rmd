@@ -409,3 +409,149 @@ confmtx.res.res.lasso$byClass
 confmtx.res.res.lasso$overall
 
 ```
+
+
+## export
+```{r} 
+write.csv(gdrive.lab.dtrain, "t2/gdrive/dtrain_lab.csv",row.names=FALSE)
+write.csv(gdrive.res.dtrain, "t2/gdrive/dtrain_res.csv",row.names=FALSE)
+
+write.csv(gdrive.lab.dtest, "t2/gdrive/dtest_lab.csv",row.names=FALSE)
+write.csv(gdrive.res.dtest, "t2/gdrive/dtest_res.csv",row.names=FALSE)
+
+gdrive.lab.data <- gdrive.lab.data[, !(names(gdrive.lab.data) %in% c("X.dir", "ipOptCpCl_Num"))]
+gdrive.res.data <- gdrive.res.data[, !(names(gdrive.res.data) %in% c("X.dir", "ipOptCpCl_Num"))]
+
+write.csv(gdrive.lab.data, "t2/gdrive/data_lab.csv",row.names=FALSE)
+write.csv(gdrive.res.data, "t2/gdrive/data_res.csv",row.names=FALSE)
+
+```
+
+
+```{r}
+gdrive.lab.1111 <- gdrive.lab.1111[, !(names(gdrive.lab.1111) %in% c("X.dir", "ipOptCpCl_Num"))]
+gdrive.res.1111 <- gdrive.res.1111[, !(names(gdrive.res.1111) %in% c("X.dir", "ipOptCpCl_Num"))]
+gdrive.lab.1111
+
+gdrive.lab.1111 <- gdrive.lab.1111[-80]
+gdrive.lab.1111$isLab <- 1
+gdrive.lab.1111$isLab <- as.factor(gdrive.lab.1111$isLab)
+gdrive.res.1111 <-gdrive.res.1111[-80]
+gdrive.res.1111$isLab <- 0
+gdrive.res.1111$isLab <- as.factor(gdrive.res.1111$isLab)
+
+gdrive.lab.1111.trnRows  <- sample(nrow(gdrive.lab.1111),nrow(gdrive.lab.1111)*0.7)
+gdrive.lab.1111.dtrain <- gdrive.lab.1111[gdrive.lab.1111.trnRows,]
+gdrive.lab.1111.dtest  <- gdrive.lab.1111[-gdrive.lab.1111.trnRows,]
+
+gdrive.res.1111.trnRows  <- sample(nrow(gdrive.res.1111),nrow(gdrive.res.1111)*0.7)
+gdrive.res.1111.dtrain <- gdrive.res.1111[gdrive.res.1111.trnRows,]
+gdrive.res.1111.dtest  <- gdrive.res.1111[-gdrive.res.1111.trnRows,]
+
+gdrive.1111.dtrain <- rbind(gdrive.lab.1111.dtrain,gdrive.res.1111.dtrain)
+gdrive.1111.dtest <- rbind(gdrive.lab.1111.dtest,gdrive.res.1111.dtest)
+ncol(gdrive.1111.dtrain)
+```
+
+## C45
+```{r}
+train_control<- trainControl(method="cv", number=10)
+gdrive.lab.C45Model.locat <- train(isLab ~., method="J48", data=gdrive.1111.dtrain,
+                tuneLength = 5,
+                trControl = train_control)
+```
+
+```{r}
+gdrive.lab.C45Model.locat$finalModel
+
+predictions.c45.locat = predict(gdrive.lab.C45Model.locat, newdata = gdrive.1111.dtest)
+confMatrixes.c45.locat <- confusionMatrix(predictions.c45.locat, gdrive.1111.dtest$isLab)
+eva.gdrive.c45.locat <- confMatrixes.c45.locat$byClass
+
+eva.gdrive.c45.locat
+confMatrixes.c45.locat$overall
+```
+
+
+## RF
+```{r}
+# Fitting Random Forest to the train dataset
+set.seed(1003)  # Setting seed
+gdrive.1111.dtrain
+repeat_cv <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+
+gdrive.locat.classifier_RF = randomForest(x = gdrive.1111.dtrain[-80],
+                               y = gdrive.1111.dtrain$isLab,
+                               ntree = 500,
+                               trControl = repeat_cv)
+
+# Importance plot
+importance(gdrive.locat.classifier_RF)
+  
+# Variable importance plot
+varImpPlot(gdrive.locat.classifier_RF)
+
+```
+
+
+
+```{r}
+predictions.rf.locat = predict(gdrive.locat.classifier_RF, newdata = gdrive.1111.dtest)
+confMatrixes.rf.locat <- confusionMatrix(predictions.rf.locat, gdrive.1111.dtest$isLab)
+eva.gdrive.rf.locat <- confMatrixes.rf.locat$byClass
+
+eva.gdrive.rf.locat
+confMatrixes.rf.locat$overall
+
+```
+
+
+# LASSO
+```{r}
+#perform k-fold cross-validation to find optimal lambda value
+lambdas_to_try <- 10^seq(-3, 5, length.out = 100)
+x = as.matrix(gdrive.1111.dtrain[-80])
+
+
+cv_model <- cv.glmnet(x, gdrive.1111.dtrain$isLab, alpha = 1,
+                      lambda = lambdas_to_try,
+                      standardize = TRUE,
+                      nfolds = 10,
+                      family = "binomial")
+
+#find optimal lambda value that minimizes test MSE
+best_lambda <- cv_model$lambda.min
+best_lambda
+
+#produce plot of test MSE by lambda value
+plot(cv_model) 
+
+cv_best_model <- glmnet(x, gdrive.1111.dtrain$isLab, alpha = 1,
+                      lambda = best_lambda,
+                      standardize = TRUE,
+                      family = "binomial")
+
+
+```
+
+
+```{r}
+dtest <- as.matrix(gdrive.1111.dtest[-80])
+threshold <- 0.5
+
+predictions.locat.lasso <- predict(cv_best_model, s = best_lambda, dtest, type = "response")
+predicted_classes.locat.lasso <- ifelse(predictions.locat.lasso > threshold,0,1)
+
+confmtx.locat.lasso <- confusionMatrix(table(predicted_classes.locat.lasso,as.matrix(gdrive.1111.dtest$isLab)))
+
+confmtx.locat.lasso$byClass
+confmtx.locat.lasso$overall
+
+```
+
+
+```{r}
+write.csv(gdrive.1111.dtrain, "t2/gdrive/locat_train.csv",row.names=FALSE)
+write.csv(gdrive.1111.dtest, "t2/gdrive/locat_test.csv",row.names=FALSE)
+
+```
