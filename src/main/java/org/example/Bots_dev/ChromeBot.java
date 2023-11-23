@@ -6,7 +6,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
-import org.example.Utils.*;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -33,6 +32,13 @@ public class ChromeBot {
         startBot(runTime);
     }
 
+
+    /**
+     * Start the bot
+     * @param runTime the total running time
+     * @throws InterruptedException if the process is interrupted
+     * @throws IOException if the file is not found
+     */
     public static void startBot(int runTime) throws InterruptedException, IOException {
         System.out.println("Starting bot");
         // Initialize a log writer
@@ -44,7 +50,6 @@ public class ChromeBot {
 
         // Read websites
         ArrayList<String> websites = readURL("websites.csv");
-
 
         // Initialize a Chrome Driver
         chromeDriverService = new ChromeDriverService.Builder().usingPort(23466).build();
@@ -63,6 +68,7 @@ public class ChromeBot {
         int websiteNo = generateRandomSelect(1000);
         String websiteURL = formatWebsiteURL(websites.get(websiteNo));
 
+        // Start browsing, each browsing session will last for a random time < 5 minutes
         while (remainTime > 0) {
             if (remainTime > timeToVisit) {
                 LocalDateTime endTime = time.plusSeconds(timeToVisit);
@@ -77,7 +83,7 @@ public class ChromeBot {
             timeToVisit = generateRandom(300);
             time = LocalDateTime.now();
             websiteNo = generateRandomSelect(1000);
-            websiteURL = formatWebsiteURL(websites.get(websiteNo));;
+            websiteURL = formatWebsiteURL(websites.get(websiteNo));
         }
         fw.flush();
         fw.close();
