@@ -25,7 +25,12 @@ public class TwitchBot {
         startBot(runTime);
     }
 
-
+    /**
+     * Start the bot
+     * @param runTime the total running time
+     * @throws IOException if the file is not found
+     * @throws InterruptedException if the process is interrupted
+     */
     public static void startBot(int runTime) throws IOException, InterruptedException {
         System.out.println("Starting bot");
         // Initialize a log writer
@@ -39,7 +44,7 @@ public class TwitchBot {
         ArrayList<String> channels = readURL("channels.csv");
 
         LocalDateTime time = LocalDateTime.now();
-        int timeToVisit = 3650;
+        int timeToVisit = generateRandom(600);
         int channelNo = 0;
         String channelURL = channels.get(channelNo).split(",")[1];
 
@@ -61,9 +66,9 @@ public class TwitchBot {
                 playStream(channelURL,endTime);
                 remainTime = 0;
             }
-            timeToVisit = 3650;
+            timeToVisit = generateRandom(600);
             time = LocalDateTime.now();
-            channelNo = 0;
+            channelNo = generateRandomSelect(channels.size());
             channelURL = channels.get(channelNo);
         }
         fw.flush();
@@ -73,35 +78,24 @@ public class TwitchBot {
     }
 
 
-    static void twitchChat() {
-                /*
-
-        // chat credential
-        OAuth2Credential credential = new OAuth2Credential("twitch", "gyzwotojqfdx1k3upyazd3j7rxie18");
-
-        TwitchClient twitchClient = TwitchClientBuilder.builder()
-                .withChatAccount(credential)
-                .withEnableChat(true)
-                .withEnableHelix(true)
-                .build();
-
-        twitchClient.getChat().sendMessage("skaum103", "Hey!");
-
-         */
-    }
-
-
+    /**
+     * Play a stream for a certain amount of time
+     * @param channelURL the URL of the channel
+     * @param endTime the time to stop
+     * @throws IOException if the file is not found
+     * @throws InterruptedException if the process is interrupted
+     */
     static void playStream(String channelURL, LocalDateTime endTime) throws IOException, InterruptedException {
         // Logging
         System.out.println(LocalDateTime.now() + " Going to visit " + channelURL + " until " + endTime);
         fw.write(LocalDateTime.now() + " Going to visit " + channelURL + " until " + endTime + "\n");
 
-        // Browsing, scroll to the bottom of the website to ensure all elements are loaded
+        // Start streamlink to play the stream
         String command = "streamlink " + channelURL + " 720p60";
         Process proc = Runtime.getRuntime().exec(command);
         BufferedReader reader =
                 new BufferedReader(new InputStreamReader(proc.getInputStream()));
-        String line = "";
+        String line;
         while((line = reader.readLine()) != null) {
             System.out.print(line + "\n");
             fw.write(line + "\n");

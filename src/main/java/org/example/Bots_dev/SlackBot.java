@@ -37,8 +37,11 @@ public class SlackBot {
         startBot();
     }
 
+    /** Start the bot */
     public static void startBot() throws InterruptedException {
+        // Initialize the Slack Client
         MethodsClient client = initializeSlack();
+        // Fetch the conversation history, simualte a user reading the history
         fetchHistory("C05C2M0P4DR",client);
 
         int runTime = 3600;
@@ -46,24 +49,30 @@ public class SlackBot {
         LocalDateTime endTime = time.plusSeconds(runTime);
         System.out.println("Executing until " + endTime);
 
+        // While the current time is before the end time
+        // Execute the command every 2.5 seconds to Post a message and reply to it
         while (time.isBefore(endTime)) {
             exec("C05C2M0P4DR", client);
             time = LocalDateTime.now();
-            /*
-            TimeUnit.SECONDS.sleep((long) util.generateRandom(5,10));
-
-             */
             TimeUnit.SECONDS.sleep((long) 2.5);
         }
     }
 
 
+    /** Initialize the Slack Client */
     static MethodsClient initializeSlack() {
         Slack slack = Slack.getInstance();
         // Initialize an API Methods client with the given token2
         return slack.methods(token);
     }
 
+
+    /**
+     * Post a message to a channel
+     * @param methods the Slack API Methods client
+     * @param message the message to be posted
+     * @return the timestamp of the message
+     */
     static String sendThread(MethodsClient methods, String message) {
         // Build a request object
         ChatPostMessageRequest request = ChatPostMessageRequest.builder()
@@ -75,6 +84,13 @@ public class SlackBot {
     }
 
 
+    /**
+     * Reply to a message in a thread
+     * @param methods the Slack API Methods client
+     * @param message the message to be posted
+     * @param ts the timestamp of the message to be replied
+     * @return the timestamp of the message
+     */
     static String replyThread(MethodsClient methods, String message, String ts) {
         // Build a request object
         ChatPostMessageRequest request = ChatPostMessageRequest.builder()
@@ -87,6 +103,12 @@ public class SlackBot {
     }
 
 
+    /**
+     * Handle the response of the post request
+     * @param methods the Slack API Methods client
+     * @param request the request object
+     * @return the timestamp of the message
+     */
     @Nullable
     private static String handlePostResponse(MethodsClient methods, ChatPostMessageRequest request) {
         try {
@@ -102,12 +124,12 @@ public class SlackBot {
         catch (SlackApiException | IOException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
+
     /**
-     * Fetch conversation history using ID from last example
+     * Fetch conversation history using ID
      */
     static ArrayList<String> fetchHistory(String id, MethodsClient client) {
         ArrayList<String> tss = new ArrayList<>();
@@ -163,17 +185,21 @@ public class SlackBot {
         } catch (IOException | SlackApiException e) {
             logger.error("error: {}", e.getMessage(), e);
         }
-
         return null;
     }
 
-
+    /**
+     * Execute the command to post a message and reply to it
+     * @param channelID the ID of the channel
+     * @param client the Slack API Methods client
+     */
     public static void exec(String channelID, MethodsClient client){
-
+        // Generate a random string and post it to the channel
         String threadPost = util.generateFakerString(50,100);
         String ts = sendThread(client,threadPost);
         fetchMessage(channelID,ts,client);
 
+        // Generate a random string and reply to the posted message
         String threadReply = util.generateFakerString(50,100);
         ts = replyThread(client,threadReply,ts);
         fetchMessage(channelID,ts,client);
