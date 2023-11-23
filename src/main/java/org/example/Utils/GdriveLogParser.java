@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
-import static org.example.Utils.util.cmdExec;
-
 public class GdriveLogParser {
 
     public static void main(String[] args) throws IOException {
@@ -14,13 +12,20 @@ public class GdriveLogParser {
         parseGDriveLog(path);
     }
 
+    /**
+     * Parse the GDrive log file and print the upload speed
+     * @param path the path of the log file
+     * @return A string contains info of the upload
+     * @throws IOException if the file is not found
+     */
     public static String parseGDriveLog(String path) throws IOException {
         File gDriveLog = new File(path);
         Scanner reader = new Scanner(gDriveLog);
 
+        // Parse the log file
         int totalUploadCount = 0;
         double totalUploadData = 0;
-        float totalTime = 0;
+        float totalTime = 1200;
         while (reader.hasNextLine()) {
             String line = reader.nextLine();
             if (line.contains("Size:")) {
@@ -29,12 +34,13 @@ public class GdriveLogParser {
             }
         }
 
+        // Calculate the upload speed
         totalUploadData = Math.round(totalUploadData * 100.0) / 100.0;
-        double avgSpeed = Math.round((totalUploadData / 1200) * 100.0) / 100.0;
+        double avgSpeed = Math.round((totalUploadData / totalTime) * 100.0) / 100.0;
         System.out.println(path);
         System.out.println(totalUploadCount + " Files are uploaded");
         System.out.println(totalUploadData + " MB of data are uploaded");
-        System.out.println("Ave Speed: " + avgSpeed + " MB/s");
+        System.out.println("Avg Speed: " + avgSpeed + " MB/s");
         System.out.println("---------------------");
 
         return path + "\n" + totalUploadCount + " Files are uploaded" + "\n"
@@ -42,11 +48,4 @@ public class GdriveLogParser {
                 + "Ave Speed: " + avgSpeed +  " MB/s" + "\n" + "---------------------" + "\n";
 
     }
-
-    public static void parsePcap(String path) throws IOException, InterruptedException {
-        util.replaceLine("capinfos.sh","capinfos " + path);
-        cmdExec("./capinfos.sh");
-    }
-
-
 }

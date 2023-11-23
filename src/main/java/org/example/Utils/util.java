@@ -1,13 +1,10 @@
 package org.example.Utils;
 
 import com.github.javafaker.Faker;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeDriverService;
+
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
+
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -90,6 +87,7 @@ public class util {
         File file = new File(path);
         StringBuilder buffer = new StringBuilder();
 
+        // Read the file and append the replacement string
         try {
             Scanner reader = new Scanner(file);
             String line = reader.nextLine();
@@ -102,6 +100,7 @@ public class util {
             e.printStackTrace();
         }
 
+        // Write the file
         try {
             FileWriter fWriter = new FileWriter(path);
             BufferedWriter writer = new BufferedWriter(fWriter);
