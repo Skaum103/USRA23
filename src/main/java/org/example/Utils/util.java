@@ -13,19 +13,32 @@ import java.util.concurrent.TimeUnit;
 
 public class util {
 
-    // Generate a random number represents the minutes to visit a website
-    // Between 0-600 seconds
+    /**
+     * Generate a random number between 0 and scale
+     * @param scale The upper Limit of the random number
+     * @return The random number
+     */
     public static int generateRandom(int scale) {
         return (int) (Math.random() * scale);
     }
 
+
+    /**
+     * Generate a random number between lowerBound and upperBound
+     * @param lowerBound The lower bound of the random number
+     * @param upperbound The upper bound of the random number
+     * @return The random number
+     */
     public static double generateRandom(int lowerBound, int upperbound) {
         return (Math.random() * (upperbound-lowerBound)) + lowerBound;
     }
 
 
-    // Generate a random number represents the index of website to visit
-    // Between 1-20
+    /**
+     * Generate a random select index for a list
+     * @param listSize the size of the list
+     * @return the random index
+     */
     public static int generateRandomSelect(int listSize) {
         int res =  (int) (Math.random() * listSize);
         if (res == listSize) {
@@ -35,7 +48,12 @@ public class util {
     }
 
 
-    // Use the random index to find the website to visit
+    /**
+     * Read a URL file and return a list of the URLs
+     * @param filePath the path of the URL file
+     * @return an ArrayList of the URLs
+     * @throws IOException if the file is not found
+     */
     public static ArrayList<String> readURL(String filePath) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
 
@@ -48,49 +66,26 @@ public class util {
         return lines;
     }
 
-    public static String generateRandomString(int lowerBound, int upperBound) {
-        int length = (int) generateRandom(lowerBound,upperBound);
 
-        // choose a Character random from this String
-        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                + "0123456789"
-                + "abcdefghijklmnopqrstuvxyz"
-                +"!@#$%^&*()-+=/,.<>_ ";
-
-        // create StringBuffer size of AlphaNumericString
-        StringBuilder sb = new StringBuilder(length);
-
-        for (int i = 0; i < length; i++) {
-
-            // generate a random number between
-            // 0 to AlphaNumericString variable length
-            int index
-                    = (int)(AlphaNumericString.length()
-                    * Math.random());
-
-            // add Character one by one in end of sb
-            sb.append(AlphaNumericString
-                    .charAt(index));
-        }
-
-        return sb.toString();
-    }
-
+    /**
+     * Generate a random string with a length between lowerBound and upperBound
+     * Use Java Faker to generate the string
+     * @param lowerBound the lower bound of the length
+     * @param upperBound the upper bound of the length
+     * @return a random string
+     */
     public static String generateFakerString(int lowerBound, int upperBound) {
         int length = (int) generateRandom(lowerBound,upperBound);
         Faker faker = new Faker();
         return faker.lorem().fixedString(length);
     }
 
-    public ArrayList<String> generateStrings(int count, int lowerBound, int upperBound) {
-        ArrayList<String> strings = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            strings.add(generateRandomString(lowerBound,upperBound));
-        }
-        return strings;
-    }
 
-
+    /**
+     * Replace a line in a file
+     * @param path path of the file
+     * @param replacement the replacement string
+     */
     public static void replaceLine(String path, String replacement) {
         File file = new File(path);
         StringBuilder buffer = new StringBuilder();
@@ -118,6 +113,11 @@ public class util {
 
     }
 
+
+    /**
+     * Execute a command in the terminal
+     * @param command command to be executed
+     */
     static void cmdExec(String command) {
         try {
             Process proc = Runtime.getRuntime().exec(command);
@@ -136,6 +136,11 @@ public class util {
     }
 
 
+    /**
+     * For remote connection use, wait for the remote to disconnect
+     * Avoid the situation that the remote is still connected when the capture is started
+     * This will cause the capture to be corrupted
+     */
     public static void waitRemoteDisconnect() {
         try {
             TimeUnit.SECONDS.sleep(5);
@@ -146,6 +151,10 @@ public class util {
     }
 
 
+    /**
+     * Read the Slack API token from the token.txt file
+     * @return the token
+     */
     public static String readToken() {
         String token = null;
         try {
